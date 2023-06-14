@@ -5,6 +5,7 @@ import org.keycloak.services.resource.RealmResourceProvider;
 
 import de.captaingoldfish.scim.sdk.keycloak.auth.Authentication;
 import de.captaingoldfish.scim.sdk.keycloak.scim.ScimEndpoint;
+import lombok.extern.slf4j.Slf4j;
 
 
 /**
@@ -14,6 +15,7 @@ import de.captaingoldfish.scim.sdk.keycloak.scim.ScimEndpoint;
  * this class is the base rest provider that is instantiated by keycloak through the
  * {@link ScimEndpointProviderFactory}
  */
+@Slf4j
 public class ScimEndpointProvider implements RealmResourceProvider
 {
 
@@ -37,6 +39,7 @@ public class ScimEndpointProvider implements RealmResourceProvider
   @Override
   public Object getResource()
   {
+    log.info("getResource()");
     return new ScimEndpoint(keycloakSession, new Authentication());
   }
 

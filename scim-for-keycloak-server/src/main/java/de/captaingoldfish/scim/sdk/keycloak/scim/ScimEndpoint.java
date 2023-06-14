@@ -14,12 +14,14 @@ import javax.ws.rs.PATCH;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.resteasy.spi.HttpRequest;
+import org.keycloak.component.ComponentModel;
 import org.keycloak.models.KeycloakSession;
 
 import de.captaingoldfish.scim.sdk.common.constants.HttpHeader;
@@ -30,7 +32,6 @@ import de.captaingoldfish.scim.sdk.keycloak.auth.Authentication;
 import de.captaingoldfish.scim.sdk.keycloak.auth.ScimAuthorization;
 import de.captaingoldfish.scim.sdk.keycloak.constants.ContextPaths;
 import de.captaingoldfish.scim.sdk.keycloak.entities.ScimServiceProviderEntity;
-import de.captaingoldfish.scim.sdk.keycloak.scim.administration.AdminstrationResource;
 import de.captaingoldfish.scim.sdk.keycloak.services.ScimServiceProviderService;
 import de.captaingoldfish.scim.sdk.server.endpoints.ResourceEndpoint;
 import lombok.extern.slf4j.Slf4j;
@@ -42,8 +43,7 @@ import lombok.extern.slf4j.Slf4j;
  * <br>
  */
 @Slf4j
-public class ScimEndpoint extends AbstractEndpoint
-{
+public class ScimEndpoint extends AbstractEndpoint {
 
   /**
    * the authentication implementation
@@ -53,19 +53,9 @@ public class ScimEndpoint extends AbstractEndpoint
   /**
    * @param authentication used as constructor param to pass a mockito mock during unit testing
    */
-  public ScimEndpoint(KeycloakSession keycloakSession, Authentication authentication)
-  {
+  public ScimEndpoint(KeycloakSession keycloakSession, Authentication authentication) {
     super(keycloakSession);
     this.authentication = authentication;
-  }
-
-  /**
-   * provides functionality to configure the SCIM endpoints
-   */
-  @Path(ContextPaths.ADMIN)
-  public AdminstrationResource administerResources()
-  {
-    return new AdminstrationResource(getKeycloakSession(), authentication);
   }
 
   /**
@@ -73,19 +63,19 @@ public class ScimEndpoint extends AbstractEndpoint
    *
    * @return the jax-rs response
    */
-  @POST
-  @GET
-  @PUT
-  @PATCH
-  @DELETE
-  @Path(ContextPaths.SCIM_ENDPOINT_PATH + "/{s:.*}")
+  @POST @GET @PUT @PATCH @DELETE @Path("{id}" + ContextPaths.SCIM_ENDPOINT_PATH + "/{s:.*}")
   @Produces(HttpHeader.SCIM_CONTENT_TYPE)
-  public Response handleScimRequest(String requestBody)
-  {
+  public Response handleScimRequest(@PathParam("id") String id, String requestBody) {
+    log.info("handle request");
+
+    ComponentModel model = getKeycloakSession().getContext().getRealm().getComponent(id);
+    if (model == null) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    }
+    
     ScimServiceProviderService scimServiceProviderService = new ScimServiceProviderService(getKeycloakSession());
     Optional<ScimServiceProviderEntity> serviceProviderEntity = scimServiceProviderService.getServiceProviderEntity();
-    if (serviceProviderEntity.isPresent() && !serviceProviderEntity.get().isEnabled())
-    {
+    if (serviceProviderEntity.isPresent() && !serviceProviderEntity.get().isEnabled()) {
       throw new NotFoundException();
     }
     ResourceEndpoint resourceEndpoint = getResourceEndpoint();
@@ -98,19 +88,17 @@ public class ScimEndpoint extends AbstractEndpoint
     String query = getQuery(keycloakSession.getContext().getUri().getQueryParameters());
     final HttpRequest request = keycloakSession.getContext().getContextObject(HttpRequest.class);
     ScimResponse scimResponse = resourceEndpoint.handleRequest(url + query,
-                                                               HttpMethod.valueOf(request.getHttpMethod()),
-                                                               requestBody,
-                                                               getHttpHeaders(request),
-                                                               null,
-                                                               commitOrRollback(),
-                                                               scimKeycloakContext);
+        HttpMethod.valueOf(request.getHttpMethod()),
+        requestBody,
+        getHttpHeaders(request),
+        null,
+        commitOrRollback(),
+        scimKeycloakContext);
     return scimResponse.buildResponse();
   }
 
-  private String getQuery(MultivaluedMap<String, String> queryParameters)
-  {
-    if (queryParameters == null || queryParameters.isEmpty())
-    {
+  private String getQuery(MultivaluedMap<String, String> queryParameters) {
+    if (queryParameters == null || queryParameters.isEmpty()) {
       return "";
     }
     return "?" + queryParameters.entrySet().stream().map(entry -> {
@@ -121,24 +109,17 @@ public class ScimEndpoint extends AbstractEndpoint
   /**
    * commit or rollback the transaction
    */
-  private BiConsumer<ScimResponse, Boolean> commitOrRollback()
-  {
+  private BiConsumer<ScimResponse, Boolean> commitOrRollback() {
     return (scimResponse, isError) -> {
-      try
-      {
-        if (isError)
-        {
+      try {
+        if (isError) {
           // if the request has failed roll the transaction back
           getKeycloakSession().getTransactionManager().setRollbackOnly();
-        }
-        else
-        {
+        } else {
           // if the request succeeded commit the transaction
           getKeycloakSession().getTransactionManager().commit();
         }
-      }
-      catch (Exception ex)
-      {
+      } catch (Exception ex) {
         throw new InternalServerException(ex.getMessage());
       }
     };
@@ -150,18 +131,16 @@ public class ScimEndpoint extends AbstractEndpoint
    * @param httpRequest the current request object
    * @return a map with the http-headers
    */
-  public Map<String, String> getHttpHeaders(HttpRequest httpRequest)
-  {
+  public Map<String, String> getHttpHeaders(HttpRequest httpRequest) {
     Map<String, String> httpHeaders = new HashMap<>();
 
     httpRequest.getHttpHeaders().getRequestHeaders().forEach((headerName, value) -> {
       String headerValue = value.get(0);
 
       boolean isContentTypeHeader = HttpHeader.CONTENT_TYPE_HEADER.toLowerCase(Locale.ROOT)
-                                                                  .equals(headerName.toLowerCase(Locale.ROOT));
+          .equals(headerName.toLowerCase(Locale.ROOT));
       boolean isApplicationJson = StringUtils.startsWithIgnoreCase(headerValue, "application/json");
-      if (isContentTypeHeader && isApplicationJson)
-      {
+      if (isContentTypeHeader && isApplicationJson) {
         headerValue = HttpHeader.SCIM_CONTENT_TYPE;
       }
       httpHeaders.put(headerName, headerValue);

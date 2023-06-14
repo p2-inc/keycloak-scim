@@ -24,7 +24,6 @@ import org.keycloak.services.managers.RealmManager;
 import org.keycloak.services.resources.admin.AdminAuth;
 
 import de.captaingoldfish.scim.sdk.keycloak.entities.ScimServiceProviderEntity;
-import de.captaingoldfish.scim.sdk.keycloak.provider.RealmRoleInitializer;
 import de.captaingoldfish.scim.sdk.keycloak.services.ScimServiceProviderService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -89,59 +88,6 @@ public class Authentication
     // if no service provider representation are found in the database (which shouldn't happen under normal
     // circumstances) we do not expect any clients to be associated with the current service provider
     return adminAuth;
-  }
-
-  /**
-   * checks if the just logged in user was granted the {@link RealmRoleInitializer#SCIM_ADMIN_ROLE} to access
-   * the SCIM administration
-   * 
-   * @param keycloakSession the current request context
-   */
-  public void authenticateAsScimAdmin(KeycloakSession keycloakSession)
-  {
-    AdminAuth adminAuth = authenticateOnRealm(keycloakSession);
-    List<RoleModel> authorizedRoles = getAuthorizedRoles(keycloakSession);
-    boolean accessGranted = authorizedRoles.stream()
-                                           .anyMatch(authorizedRole -> adminAuth.getUser().hasRole(authorizedRole));
-    if (!accessGranted)
-    {
-      throw new NotAuthorizedException(ERROR_MESSAGE_AUTHENTICATION_FAILED);
-    }
-  }
-
-  /**
-   * tries to get the roles that are authorized to access the SCIM environment
-   * 
-   * @param keycloakSession the current request context
-   * @return should be the "scim-admin" role of the master client of this realm that is located in the master
-   *         realm itself (used to grant access for the admin user) and the "scim-admin" role of the
-   *         realm-management client of the current realm
-   */
-  private List<RoleModel> getAuthorizedRoles(KeycloakSession keycloakSession)
-  {
-    List<RoleModel> authorizedRoles = new ArrayList<>();
-    RoleModel masterClientRoleModel = keycloakSession.getContext()
-                                                     .getRealm()
-                                                     .getMasterAdminClient()
-                                                     .getRole(RealmRoleInitializer.SCIM_ADMIN_ROLE);
-    authorizedRoles.add(masterClientRoleModel);
-    RealmModel currentRealm = keycloakSession.getContext().getRealm();
-    RealmManager realmManager = new RealmManager(keycloakSession);
-    String realmManagementClientId;
-    if (currentRealm.getName().equals("master"))
-    {
-      // could not find any matching constant in the keycloak project
-      realmManagementClientId = "master-realm";
-    }
-    else
-    {
-      // is actually hardcoded by keycloak and is always "realm-management"
-      realmManagementClientId = realmManager.getRealmAdminClientId(currentRealm);
-    }
-    ClientModel clientModel = currentRealm.getClientByClientId(realmManagementClientId);
-    RoleModel realmClientRoleModel = clientModel.getRole(RealmRoleInitializer.SCIM_ADMIN_ROLE);
-    authorizedRoles.add(realmClientRoleModel);
-    return authorizedRoles;
   }
 
   /**

@@ -1,0 +1,19 @@
+version: '3'
+
+volumes:
+  h2_data:
+    driver: local
+
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:21.1.1
+    volumes:
+      - h2_data:/opt/keycloak/data
+      - ${PWD}/target/scim-for-keycloak-kc-20-b1.jar:/opt/keycloak/providers/scim-for-keycloak-kc-20-b1.jar
+    environment:
+      KC_HTTP_RELATIVE_PATH: /auth
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - 8080:8080
+    entrypoint: /opt/keycloak/bin/kc.sh start-dev

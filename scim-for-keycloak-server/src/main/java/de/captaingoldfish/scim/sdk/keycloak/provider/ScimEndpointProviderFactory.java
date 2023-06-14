@@ -59,7 +59,7 @@ public class ScimEndpointProviderFactory implements RealmResourceProviderFactory
   @Override
   public void postInit(KeycloakSessionFactory factory)
   {
-    RealmRoleInitializer.initializeRoles(factory);
+
   }
 
   @Override
@@ -67,5 +67,4 @@ public class ScimEndpointProviderFactory implements RealmResourceProviderFactory
   {
     // do nothing
   }
-
 }

@@ -24,8 +24,6 @@
     <modules>
         <module>scim-for-keycloak-resources</module>
         <module>scim-for-keycloak-server</module>
-        <module>scim-for-keycloak-client</module>
-        <module>scim-for-keycloak-frontend-integration-tests</module>
     </modules>
 
     <properties>
@@ -40,8 +38,8 @@
 
         <version.lombok>1.18.24</version.lombok>
 
-        <version.keycloak>19.0.3</version.keycloak>
-        <version.resteasy-core-spi>4.7.5.Final</version.resteasy-core-spi>
+        <version.keycloak>21.1.1</version.keycloak>
+        <version.resteasy-core-spi>4.7.7.Final</version.resteasy-core-spi>
         <version.scim.sdk>1.17.1-kc</version.scim.sdk>
 
         <version.sun.javax.activation>1.2.0</version.sun.javax.activation>
@@ -59,7 +57,6 @@
         <version.maven.versions.plugin>2.8.1</version.maven.versions.plugin>
         <version.maven.compiler.plugin>3.8.1</version.maven.compiler.plugin>
         <version.maven.formatter.plugin>2.13.0</version.maven.formatter.plugin>
-        <version.maven.enforcer.plugin>3.0.0-M3</version.maven.enforcer.plugin>
         <version.maven.surefire.plugin>3.0.0-M5</version.maven.surefire.plugin>
     </properties>
 
@@ -92,11 +89,6 @@
             <dependency>
                 <groupId>de.captaingoldfish</groupId>
                 <artifactId>scim-for-keycloak-server</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>de.captaingoldfish</groupId>
-                <artifactId>scim-for-keycloak-client</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -209,53 +201,6 @@
                 <version>${version.maven.surefire.plugin}</version>
                 <configuration>
                     <groups>!integration-tests</groups>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>net.revelc.code.formatter</groupId>
-                <artifactId>formatter-maven-plugin</artifactId>
-                <version>${version.maven.formatter.plugin}</version>
-                <configuration>
-                    <configFile>${formatter-path}/formatter.xml</configFile>
-                    <lineEnding>LF</lineEnding>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>validate</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <version>${version.maven.enforcer.plugin}</version>
-                <executions>
-                    <execution>
-                        <id>enforce</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <rules>
-                        <requireMavenVersion>
-                            <version>[3.3,)</version>
-                        </requireMavenVersion>
-
-                        <requireReleaseDeps>
-                            <message>No Snapshots Allowed on release!</message>
-                            <onlyWhenRelease>true</onlyWhenRelease>
-                        </requireReleaseDeps>
-
-                        <banDuplicatePomDependencyVersions/>
-
-                        <dependencyConvergence/>
-                    </rules>
                 </configuration>
             </plugin>
 
