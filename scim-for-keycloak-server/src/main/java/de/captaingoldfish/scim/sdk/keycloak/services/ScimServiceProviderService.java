@@ -181,20 +181,7 @@ public class ScimServiceProviderService extends AbstractService
    */
   public Optional<ScimServiceProviderEntity> getServiceProviderEntity()
   {
-    RealmModel realmModel = getKeycloakSession().getContext().getRealm();
-    EntityManager entityManager = getEntityManager();
-    ScimServiceProviderEntity scimServiceProvider;
-    try
-    {
-      scimServiceProvider = entityManager.createNamedQuery("getScimServiceProvider", ScimServiceProviderEntity.class)
-                                         .setParameter("realmId", realmModel.getId())
-                                         .getSingleResult();
-      return Optional.of(entityManager.merge(scimServiceProvider));
-    }
-    catch (NoResultException ex)
-    {
-      return Optional.empty();
-    }
+    return Optional.empty();
   }
 
   /**
@@ -202,10 +189,7 @@ public class ScimServiceProviderService extends AbstractService
    */
   private ScimServiceProviderEntity createServiceProviderEntity()
   {
-    EntityManager entityManager = getEntityManager();
     ScimServiceProviderEntity scimServiceProvider = getDefaultServiceProviderConfiguration();
-    entityManager.merge(scimServiceProvider);
-    entityManager.flush();
     return scimServiceProvider;
   }
 
@@ -280,11 +264,6 @@ public class ScimServiceProviderService extends AbstractService
    */
   public void deleteProvider()
   {
-    RealmModel realmModel = getKeycloakSession().getContext().getRealm();
-    getEntityManager().createNamedQuery("removeScimServiceProvider")
-                      .setParameter("realmId", realmModel.getId())
-                      .executeUpdate();
-    getEntityManager().flush();
   }
 
   /**
@@ -294,10 +273,5 @@ public class ScimServiceProviderService extends AbstractService
    */
   public void removeAssociatedClients(ClientModel removedClient)
   {
-    // unfortunately I cannot do this in a clean way because the keycloak implementation was prematurely calling
-    // the flush-method on the entity manager
-    getEntityManager().createNativeQuery("DELETE FROM SCIM_SP_AUTHORIZED_CLIENTS WHERE CLIENT_ID = '"
-                                         + removedClient.getId() + "'")
-                      .executeUpdate();
   }
 }
