@@ -91,7 +91,6 @@ public final class ScimConfiguration
     roleResourceType.setFeatures(ResourceTypeFeatures.builder().autoFiltering(true).autoSorting(true).build());
     ScimResourceTypeEntity roleResourceTypeEntity = resourceTypeService.getOrCreateResourceTypeEntry(roleResourceType);
     resourceTypeService.updateResourceType(roleResourceType, roleResourceTypeEntity);
-
     return resourceEndpoint;
   }
 

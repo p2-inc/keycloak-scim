@@ -29,6 +29,7 @@ import de.captaingoldfish.scim.sdk.common.constants.enums.HttpMethod;
 import de.captaingoldfish.scim.sdk.common.exceptions.InternalServerException;
 import de.captaingoldfish.scim.sdk.common.response.ScimResponse;
 import de.captaingoldfish.scim.sdk.keycloak.auth.Authentication;
+import de.captaingoldfish.scim.sdk.keycloak.auth.ExtScimAuthorization;
 import de.captaingoldfish.scim.sdk.keycloak.auth.ScimAuthorization;
 import de.captaingoldfish.scim.sdk.keycloak.constants.ContextPaths;
 import de.captaingoldfish.scim.sdk.keycloak.entities.ScimServiceProviderEntity;
@@ -66,8 +67,6 @@ public class ScimEndpoint extends AbstractEndpoint {
   @POST @GET @PUT @PATCH @DELETE @Path("{id}" + ContextPaths.SCIM_ENDPOINT_PATH + "/{s:.*}")
   @Produces(HttpHeader.SCIM_CONTENT_TYPE)
   public Response handleScimRequest(@PathParam("id") String id, String requestBody) {
-    log.info("handle request");
-
     ComponentModel model = getKeycloakSession().getContext().getRealm().getComponent(id);
     if (model == null) {
       return Response.status(Response.Status.NOT_FOUND).build();
@@ -80,7 +79,8 @@ public class ScimEndpoint extends AbstractEndpoint {
     }
     ResourceEndpoint resourceEndpoint = getResourceEndpoint();
 
-    ScimAuthorization scimAuthorization = new ScimAuthorization(getKeycloakSession(), authentication);
+    //ScimAuthorization scimAuthorization = new ScimAuthorization(getKeycloakSession(), authentication);
+    ExtScimAuthorization scimAuthorization = new ExtScimAuthorization(getKeycloakSession());
     ScimKeycloakContext scimKeycloakContext = new ScimKeycloakContext(getKeycloakSession(), scimAuthorization);
     KeycloakSession keycloakSession = getKeycloakSession();
 

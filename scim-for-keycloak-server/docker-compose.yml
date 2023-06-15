@@ -3,6 +3,8 @@ version: '3'
 volumes:
   h2_data:
     driver: local
+  caddy_data:
+    driver: local
 
 services:
   keycloak:
@@ -14,6 +16,22 @@ services:
       KC_HTTP_RELATIVE_PATH: /auth
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
+      PROXY_ADDRESS_FORWARDING: 'true'
+      KC_HOSTNAME_STRICT: 'false'
+      KC_HTTP_ENABLED: 'true'
+      KC_PROXY: 'edge'
+      KC_LOG_LEVEL: INFO
     ports:
       - 8080:8080
     entrypoint: /opt/keycloak/bin/kc.sh start-dev
+  caddy:
+    image: caddy:2.4.6-alpine
+    restart: unless-stopped
+    command: caddy reverse-proxy --from https://s01.villamiramar.fr:443 --to http://keycloak:8080
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - caddy_data:/data
+    depends_on:
+      - keycloak

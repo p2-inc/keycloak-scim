@@ -108,9 +108,7 @@ public class ScimResourceTypeService extends AbstractService
                                                                           .name(resourceType.getName())
                                                                           .created(Instant.now())
                                                                           .build();
-    getEntityManager().persist(scimResourceTypeEntity);
     setValuesOfEntity(scimResourceTypeEntity, resourceType);
-    getEntityManager().flush();
     return scimResourceTypeEntity;
   }
 
@@ -122,18 +120,7 @@ public class ScimResourceTypeService extends AbstractService
    */
   public Optional<ScimResourceTypeEntity> getResourceTypeEntityByName(String name)
   {
-    RealmModel realmModel = getKeycloakSession().getContext().getRealm();
-    try
-    {
-      return Optional.of(getEntityManager().createNamedQuery("getScimResourceType", ScimResourceTypeEntity.class)
-                                           .setParameter("realmId", realmModel.getId())
-                                           .setParameter("name", name)
-                                           .getSingleResult());
-    }
-    catch (NoResultException ex)
-    {
-      return Optional.empty();
-    }
+    return Optional.empty();
   }
 
   /**
@@ -283,11 +270,6 @@ public class ScimResourceTypeService extends AbstractService
    */
   public void deleteResourceTypes()
   {
-    RealmModel realmModel = getKeycloakSession().getContext().getRealm();
-    getEntityManager().createNamedQuery("removeScimResourceTypes")
-                      .setParameter("realmId", realmModel.getId())
-                      .executeUpdate();
-    getEntityManager().flush();
   }
 
   /**
@@ -388,9 +370,6 @@ public class ScimResourceTypeService extends AbstractService
    */
   private void removeFromMappingTable(String mappingTableName, RoleModel roleModel)
   {
-    getEntityManager().createNativeQuery("DELETE FROM " + mappingTableName + " WHERE ROLE_ID = '" + roleModel.getId()
-                                         + "'")
-                      .executeUpdate();
   }
 
 }

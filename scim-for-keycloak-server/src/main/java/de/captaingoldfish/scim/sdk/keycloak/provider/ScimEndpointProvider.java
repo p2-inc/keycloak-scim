@@ -39,7 +39,6 @@ public class ScimEndpointProvider implements RealmResourceProvider
   @Override
   public Object getResource()
   {
-    log.info("getResource()");
     return new ScimEndpoint(keycloakSession, new Authentication());
   }
 

@@ -36,9 +36,11 @@ public class ScimKeycloakContext extends Context
     this.keycloakSession = keycloakSession;
     this.adminEventAuditer = createAnonymousEventBuilder();
     // if this consumer is called the adminEventAuditer will be overridden with an authenticated instance
+    /*
     authorization.setAdminAuthConsumer(adminAuth -> {
       this.adminEventAuditer = new ScimAdminEventBuilder(keycloakSession, adminAuth);
     });
+    */
   }
 
   /**
