@@ -1,3 +1,5 @@
+> :warning: **DO NOT USE!** This is an experimental fork of the [scim-for-keycloak](https://github.com/Captain-P-Goldfish/scim-for-keycloak) project to asses the viability of exposing a simple SCIM server that is configured (hacked) using automatic admin UI of a User Federation provider. It is only posted here for collaborators. If you need a mature SCIM implementation, buy it from Pascal at (https://scim-for-keycloak.de/).
+
 # SCIM for Keycloak website online
 
 The website to get access to the SCIM for Keycloak project is online. You can access it under:
