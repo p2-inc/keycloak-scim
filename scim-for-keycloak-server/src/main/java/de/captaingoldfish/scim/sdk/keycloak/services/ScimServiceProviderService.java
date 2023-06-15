@@ -124,7 +124,6 @@ public class ScimServiceProviderService extends AbstractService
       });
     }
 
-    getEntityManager().flush();
     return toScimRepresentation(scimServiceProviderEntity);
   }
 

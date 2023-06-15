@@ -69,7 +69,7 @@ public class ScimEndpoint extends AbstractEndpoint {
   public Response handleScimRequest(@PathParam("id") String id, String requestBody) {
     ComponentModel model = getKeycloakSession().getContext().getRealm().getComponent(id);
     if (model == null) {
-      return Response.status(Response.Status.NOT_FOUND).build();
+      throw new NotFoundException(id + " unknown");
     }
     
     ScimServiceProviderService scimServiceProviderService = new ScimServiceProviderService(getKeycloakSession());
@@ -79,8 +79,7 @@ public class ScimEndpoint extends AbstractEndpoint {
     }
     ResourceEndpoint resourceEndpoint = getResourceEndpoint();
 
-    //ScimAuthorization scimAuthorization = new ScimAuthorization(getKeycloakSession(), authentication);
-    ExtScimAuthorization scimAuthorization = new ExtScimAuthorization(getKeycloakSession());
+    ExtScimAuthorization scimAuthorization = new ExtScimAuthorization(getKeycloakSession(), id, model);
     ScimKeycloakContext scimKeycloakContext = new ScimKeycloakContext(getKeycloakSession(), scimAuthorization);
     KeycloakSession keycloakSession = getKeycloakSession();
 

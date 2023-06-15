@@ -13,6 +13,7 @@ import org.keycloak.models.ClientModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RoleModel;
 import org.keycloak.models.UserModel;
+import org.keycloak.component.ComponentModel;
 import org.keycloak.services.resources.admin.AdminAuth;
 
 import de.captaingoldfish.scim.sdk.keycloak.audit.ScimAdminEventBuilder;
@@ -20,6 +21,8 @@ import de.captaingoldfish.scim.sdk.server.endpoints.authorize.Authorization;
 import lombok.Data;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+
+import static de.captaingoldfish.scim.sdk.keycloak.provider.ConfigurationProperties.*;
 
 
 /**
@@ -32,10 +35,14 @@ import lombok.extern.slf4j.Slf4j;
 @Data
 public class ExtScimAuthorization extends ScimAuthorization
 {
+  private final String id;
+  private final ComponentModel model;
   private final KeycloakSession keycloakSession;
 
-  public ExtScimAuthorization(KeycloakSession keycloakSession) {
-    super(null, null);
+  public ExtScimAuthorization(KeycloakSession keycloakSession, String id, ComponentModel model) {
+    super(keycloakSession, null);
+    this.id = id;
+    this.model = model;
     this.keycloakSession = keycloakSession;
   }
 
@@ -51,8 +58,12 @@ public class ExtScimAuthorization extends ScimAuthorization
 
   @Override
   public boolean authenticate(Map<String, String> httpHeaders, Map<String, String> queryParams) {
-    //todo check the component model for the correct bearer token for this id
-    return true;
+    String token = model.get(BEARER_TOKEN_PROPERTY);
+    String header = httpHeaders.get("Authorization");
+    if (header != null && header.toLowerCase().startsWith("bearer ")) {
+      header = header.substring(7);
+    }
+    return (token != null && token.equals(header));
   }
 
   @Override
