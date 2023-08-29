@@ -1,12 +1,18 @@
 package de.captaingoldfish.scim.sdk.keycloak.scim;
 
+import de.captaingoldfish.scim.sdk.common.constants.HttpHeader;
+import de.captaingoldfish.scim.sdk.common.constants.enums.HttpMethod;
+import de.captaingoldfish.scim.sdk.common.exceptions.InternalServerException;
+import de.captaingoldfish.scim.sdk.common.response.ScimResponse;
+import de.captaingoldfish.scim.sdk.keycloak.auth.ExtScimAuthorization;
+import de.captaingoldfish.scim.sdk.keycloak.constants.ContextPaths;
+import de.captaingoldfish.scim.sdk.keycloak.services.ScimServiceProviderService;
+import de.captaingoldfish.scim.sdk.server.endpoints.ResourceEndpoint;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
-
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.NotFoundException;
@@ -18,24 +24,11 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
-
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.resteasy.spi.HttpRequest;
 import org.keycloak.component.ComponentModel;
 import org.keycloak.models.KeycloakSession;
-
-import de.captaingoldfish.scim.sdk.common.constants.HttpHeader;
-import de.captaingoldfish.scim.sdk.common.constants.enums.HttpMethod;
-import de.captaingoldfish.scim.sdk.common.exceptions.InternalServerException;
-import de.captaingoldfish.scim.sdk.common.response.ScimResponse;
-import de.captaingoldfish.scim.sdk.keycloak.auth.ExtScimAuthorization;
-import de.captaingoldfish.scim.sdk.keycloak.auth.ScimAuthorization;
-import de.captaingoldfish.scim.sdk.keycloak.constants.ContextPaths;
-import de.captaingoldfish.scim.sdk.keycloak.entities.ScimServiceProviderEntity;
-import de.captaingoldfish.scim.sdk.keycloak.services.ScimServiceProviderService;
-import de.captaingoldfish.scim.sdk.server.endpoints.ResourceEndpoint;
-import lombok.extern.slf4j.Slf4j;
-
 
 /**
  * author Pascal Knueppel <br>
@@ -57,31 +50,41 @@ public class ScimEndpoint extends AbstractEndpoint {
    *
    * @return the jax-rs response
    */
-  @POST @GET @PUT @PATCH @DELETE @Path("{id}" + ContextPaths.SCIM_ENDPOINT_PATH + "/{s:.*}")
+  @POST
+  @GET
+  @PUT
+  @PATCH
+  @DELETE
+  @Path("{id}" + ContextPaths.SCIM_ENDPOINT_PATH + "/{s:.*}")
   @Produces(HttpHeader.SCIM_CONTENT_TYPE)
   public Response handleScimRequest(@PathParam("id") String id, String requestBody) {
     ComponentModel model = getKeycloakSession().getContext().getRealm().getComponent(id);
     if (model == null) {
       throw new NotFoundException(id + " unknown");
     }
-    
-    ScimServiceProviderService scimServiceProviderService = new ScimServiceProviderService(getKeycloakSession(), model);
+
+    ScimServiceProviderService scimServiceProviderService =
+        new ScimServiceProviderService(getKeycloakSession(), model);
     ResourceEndpoint resourceEndpoint = ScimConfiguration.getScimEndpoint(getKeycloakSession(), id);
 
-    ExtScimAuthorization scimAuthorization = new ExtScimAuthorization(getKeycloakSession(), id, model);
-    ScimKeycloakContext scimKeycloakContext = new ScimKeycloakContext(getKeycloakSession(), scimAuthorization);
+    ExtScimAuthorization scimAuthorization =
+        new ExtScimAuthorization(getKeycloakSession(), id, model);
+    ScimKeycloakContext scimKeycloakContext =
+        new ScimKeycloakContext(getKeycloakSession(), scimAuthorization);
     KeycloakSession keycloakSession = getKeycloakSession();
 
     final String url = keycloakSession.getContext().getUri().getAbsolutePath().toString();
     String query = getQuery(keycloakSession.getContext().getUri().getQueryParameters());
     final HttpRequest request = keycloakSession.getContext().getContextObject(HttpRequest.class);
-    ScimResponse scimResponse = resourceEndpoint.handleRequest(url + query,
-        HttpMethod.valueOf(request.getHttpMethod()),
-        requestBody,
-        getHttpHeaders(request),
-        null,
-        commitOrRollback(),
-        scimKeycloakContext);
+    ScimResponse scimResponse =
+        resourceEndpoint.handleRequest(
+            url + query,
+            HttpMethod.valueOf(request.getHttpMethod()),
+            requestBody,
+            getHttpHeaders(request),
+            null,
+            commitOrRollback(),
+            scimKeycloakContext);
     return scimResponse.buildResponse();
   }
 
@@ -89,14 +92,16 @@ public class ScimEndpoint extends AbstractEndpoint {
     if (queryParameters == null || queryParameters.isEmpty()) {
       return "";
     }
-    return "?" + queryParameters.entrySet().stream().map(entry -> {
-      return String.format("%s=%s", entry.getKey(), String.join(",", entry.getValue()));
-    }).collect(Collectors.joining("&"));
+    return "?"
+        + queryParameters.entrySet().stream()
+            .map(
+                entry -> {
+                  return String.format("%s=%s", entry.getKey(), String.join(",", entry.getValue()));
+                })
+            .collect(Collectors.joining("&"));
   }
 
-  /**
-   * commit or rollback the transaction
-   */
+  /** commit or rollback the transaction */
   private BiConsumer<ScimResponse, Boolean> commitOrRollback() {
     return (scimResponse, isError) -> {
       try {
@@ -122,18 +127,24 @@ public class ScimEndpoint extends AbstractEndpoint {
   public Map<String, String> getHttpHeaders(HttpRequest httpRequest) {
     Map<String, String> httpHeaders = new HashMap<>();
 
-    httpRequest.getHttpHeaders().getRequestHeaders().forEach((headerName, value) -> {
-      String headerValue = value.get(0);
+    httpRequest
+        .getHttpHeaders()
+        .getRequestHeaders()
+        .forEach(
+            (headerName, value) -> {
+              String headerValue = value.get(0);
 
-      boolean isContentTypeHeader = HttpHeader.CONTENT_TYPE_HEADER.toLowerCase(Locale.ROOT)
-          .equals(headerName.toLowerCase(Locale.ROOT));
-      boolean isApplicationJson = StringUtils.startsWithIgnoreCase(headerValue, "application/json");
-      if (isContentTypeHeader && isApplicationJson) {
-        headerValue = HttpHeader.SCIM_CONTENT_TYPE;
-      }
-      httpHeaders.put(headerName, headerValue);
-    });
+              boolean isContentTypeHeader =
+                  HttpHeader.CONTENT_TYPE_HEADER
+                      .toLowerCase(Locale.ROOT)
+                      .equals(headerName.toLowerCase(Locale.ROOT));
+              boolean isApplicationJson =
+                  StringUtils.startsWithIgnoreCase(headerValue, "application/json");
+              if (isContentTypeHeader && isApplicationJson) {
+                headerValue = HttpHeader.SCIM_CONTENT_TYPE;
+              }
+              httpHeaders.put(headerName, headerValue);
+            });
     return httpHeaders;
   }
-
 }

@@ -1,10 +1,10 @@
 package de.captaingoldfish.scim.sdk.keycloak.provider;
 
-import org.keycloak.provider.ProviderConfigProperty;
-import org.keycloak.component.ComponentModel;
-import java.util.List;
-
 import static org.keycloak.provider.ProviderConfigProperty.*;
+
+import java.util.List;
+import org.keycloak.component.ComponentModel;
+import org.keycloak.provider.ProviderConfigProperty;
 
 public final class ConfigurationProperties {
 
@@ -21,75 +21,85 @@ public final class ConfigurationProperties {
   public static final String BULK_SUPPORTED_PROPERTY = "BULK_SUPPORTED";
   public static final String BULK_MAX_OPERATIONS_PROPERTY = "BULK_MAX_OPERATIONS";
   public static final String BULK_MAX_PAYLOAD_SIZE_PROPERTY = "BULK_MAX_PAYLOAD_SIZE";
-  
+
   private static ProviderConfigProperty getUrlProperty() {
-    ProviderConfigProperty test = new ProviderConfigProperty(URL_PROPERTY,
-        "Generated URL",
-        "SCIMv2 URL to be given to provider SCIM client",
-        STRING_TYPE, null);
+    ProviderConfigProperty test =
+        new ProviderConfigProperty(
+            URL_PROPERTY,
+            "Generated URL",
+            "SCIMv2 URL to be given to provider SCIM client",
+            STRING_TYPE,
+            null);
     test.setReadOnly(true);
     return test;
   }
 
   private static ProviderConfigProperty getBearerTokenProperty() {
-    ProviderConfigProperty test = new ProviderConfigProperty(BEARER_TOKEN_PROPERTY,
-                                                             "Bearer Token",
-                                                             "Bearer token to be given to provider SCIM client. Will be generated if empty.",
-                                                             STRING_TYPE, null);
+    ProviderConfigProperty test =
+        new ProviderConfigProperty(
+            BEARER_TOKEN_PROPERTY,
+            "Bearer Token",
+            "Bearer token to be given to provider SCIM client. Will be generated if empty.",
+            STRING_TYPE,
+            null);
     return test;
   }
-  
-  private static final List<ProviderConfigProperty> PROPERTIES = List.of(
-      getUrlProperty(),
-      getBearerTokenProperty(),
-      new ProviderConfigProperty(REGENERATE_BEARER_TOKEN_PROPERTY,
-                                 "Regenerate Bearer Token",
-                                 "Clear previous bearer token and create a new one.",
-                                 BOOLEAN_TYPE, false),
-      new ProviderConfigProperty(FILTER_SUPPORTED_PROPERTY,
-                                 "Filter Supported",
-                                 "Filter Supported",
-                                 BOOLEAN_TYPE, false),
-      new ProviderConfigProperty(FILTER_MAX_RESULTS_PROPERTY,
-                                 "Filter Max Results",
-                                 "Filter Max Results",
-                                 STRING_TYPE, null),
-      new ProviderConfigProperty(SORT_SUPPORTED_PROPERTY,
-                                 "Sort Supported",
-                                 "Sort Supported",
-                                 BOOLEAN_TYPE, false),
-      new ProviderConfigProperty(PATCH_SUPPORTED_PROPERTY,
-                                 "Patch Supported",
-                                 "Patch Supported",
-                                 BOOLEAN_TYPE, false),
-      new ProviderConfigProperty(ETAG_SUPPORTED_PROPERTY,
-                                 "Etag Supported",
-                                 "Etag Supported",
-                                 BOOLEAN_TYPE, false),
-      new ProviderConfigProperty(CHANGE_PASSWORD_SUPPORTED_PROPERTY,
-                                 "Change Password Supported",
-                                 "Change Password Supported",
-                                 BOOLEAN_TYPE, false),
-      new ProviderConfigProperty(BULK_SUPPORTED_PROPERTY,
-                                 "Bulk Supported",
-                                 "Bulk Supported",
-                                 BOOLEAN_TYPE, false),
-      new ProviderConfigProperty(BULK_MAX_OPERATIONS_PROPERTY,
-                                 "Bulk Max Operations",
-                                 "Bulk Max Operations",
-                                 STRING_TYPE, null),
-      new ProviderConfigProperty(BULK_MAX_PAYLOAD_SIZE_PROPERTY,
-                                 "Bulk Max Payload Size",
-                                 "Bulk Max Payload Size",
-                                 STRING_TYPE, null)
-                                                                         );
-  
+
+  private static final List<ProviderConfigProperty> PROPERTIES =
+      List.of(
+          getUrlProperty(),
+          getBearerTokenProperty(),
+          new ProviderConfigProperty(
+              REGENERATE_BEARER_TOKEN_PROPERTY,
+              "Regenerate Bearer Token",
+              "Clear previous bearer token and create a new one.",
+              BOOLEAN_TYPE,
+              false),
+          new ProviderConfigProperty(
+              FILTER_SUPPORTED_PROPERTY,
+              "Filter Supported",
+              "Filter Supported",
+              BOOLEAN_TYPE,
+              false),
+          new ProviderConfigProperty(
+              FILTER_MAX_RESULTS_PROPERTY,
+              "Filter Max Results",
+              "Filter Max Results",
+              STRING_TYPE,
+              null),
+          new ProviderConfigProperty(
+              SORT_SUPPORTED_PROPERTY, "Sort Supported", "Sort Supported", BOOLEAN_TYPE, false),
+          new ProviderConfigProperty(
+              PATCH_SUPPORTED_PROPERTY, "Patch Supported", "Patch Supported", BOOLEAN_TYPE, false),
+          new ProviderConfigProperty(
+              ETAG_SUPPORTED_PROPERTY, "Etag Supported", "Etag Supported", BOOLEAN_TYPE, false),
+          new ProviderConfigProperty(
+              CHANGE_PASSWORD_SUPPORTED_PROPERTY,
+              "Change Password Supported",
+              "Change Password Supported",
+              BOOLEAN_TYPE,
+              false),
+          new ProviderConfigProperty(
+              BULK_SUPPORTED_PROPERTY, "Bulk Supported", "Bulk Supported", BOOLEAN_TYPE, false),
+          new ProviderConfigProperty(
+              BULK_MAX_OPERATIONS_PROPERTY,
+              "Bulk Max Operations",
+              "Bulk Max Operations",
+              STRING_TYPE,
+              null),
+          new ProviderConfigProperty(
+              BULK_MAX_PAYLOAD_SIZE_PROPERTY,
+              "Bulk Max Payload Size",
+              "Bulk Max Payload Size",
+              STRING_TYPE,
+              null));
+
   public static List<ProviderConfigProperty> getConfigProperties() {
     return PROPERTIES;
   }
 
   private final ComponentModel model;
-  
+
   public ConfigurationProperties(ComponentModel model) {
     this.model = model;
   }
@@ -133,7 +143,7 @@ public final class ConfigurationProperties {
   public void setFilterMaxResults(int filterMaxResults) {
     model.put(FILTER_MAX_RESULTS_PROPERTY, filterMaxResults);
   }
-  
+
   public boolean isSortSupported() {
     return model.get(SORT_SUPPORTED_PROPERTY, false);
   }
@@ -189,5 +199,4 @@ public final class ConfigurationProperties {
   public void setBulkMaxPayloadSize(int bulkMaxPayloadSize) {
     model.put(BULK_MAX_PAYLOAD_SIZE_PROPERTY, bulkMaxPayloadSize);
   }
-   
 }

@@ -1,7 +1,5 @@
 package de.captaingoldfish.scim.sdk.keycloak.scim;
 
-import org.keycloak.component.ComponentModel;
-import org.keycloak.models.KeycloakSession;
 import de.captaingoldfish.scim.sdk.common.resources.ServiceProvider;
 import de.captaingoldfish.scim.sdk.keycloak.entities.ScimResourceTypeEntity;
 import de.captaingoldfish.scim.sdk.keycloak.scim.handler.GroupHandler;
@@ -14,46 +12,53 @@ import de.captaingoldfish.scim.sdk.server.endpoints.base.UserEndpointDefinition;
 import de.captaingoldfish.scim.sdk.server.schemas.ResourceType;
 import de.captaingoldfish.scim.sdk.server.schemas.custom.ResourceTypeFeatures;
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-
+import org.keycloak.component.ComponentModel;
+import org.keycloak.models.KeycloakSession;
 
 /**
  * @author Pascal Knueppel
  * @since 04.02.2020
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ScimConfiguration
-{
+public final class ScimConfiguration {
 
-  public static ResourceEndpoint getScimEndpoint(KeycloakSession keycloakSession, String componentId) {
+  public static ResourceEndpoint getScimEndpoint(
+      KeycloakSession keycloakSession, String componentId) {
     ComponentModel model = keycloakSession.getContext().getRealm().getComponent(componentId);
     return getScimEndpoint(keycloakSession, model);
   }
 
-  public static ResourceEndpoint getScimEndpoint(KeycloakSession keycloakSession, ComponentModel model) {
+  public static ResourceEndpoint getScimEndpoint(
+      KeycloakSession keycloakSession, ComponentModel model) {
     return createNewResourceEndpoint(keycloakSession, model);
   }
 
-  /**
-   * creates a new resource endpoint for the current realm
-   */
-  private static ResourceEndpoint createNewResourceEndpoint(KeycloakSession keycloakSession, ComponentModel model)
-  {
-    ScimServiceProviderService scimServiceProviderService = new ScimServiceProviderService(keycloakSession, model);
+  /** creates a new resource endpoint for the current realm */
+  private static ResourceEndpoint createNewResourceEndpoint(
+      KeycloakSession keycloakSession, ComponentModel model) {
+    ScimServiceProviderService scimServiceProviderService =
+        new ScimServiceProviderService(keycloakSession, model);
     ServiceProvider serviceProvider = scimServiceProviderService.getServiceProvider();
     ResourceEndpoint resourceEndpoint = new ResourceEndpoint(serviceProvider);
 
-    ScimResourceTypeService resourceTypeService = new ScimResourceTypeService(keycloakSession, model);
+    ScimResourceTypeService resourceTypeService =
+        new ScimResourceTypeService(keycloakSession, model);
 
-    ResourceType userResourceType = resourceEndpoint.registerEndpoint(new UserEndpointDefinition(new UserHandler()));
-    userResourceType.setFeatures(ResourceTypeFeatures.builder().autoFiltering(true).autoSorting(true).build());
-    ScimResourceTypeEntity userResourceTypeEntity = resourceTypeService.getOrCreateResourceTypeEntry(userResourceType);
+    ResourceType userResourceType =
+        resourceEndpoint.registerEndpoint(new UserEndpointDefinition(new UserHandler()));
+    userResourceType.setFeatures(
+        ResourceTypeFeatures.builder().autoFiltering(true).autoSorting(true).build());
+    ScimResourceTypeEntity userResourceTypeEntity =
+        resourceTypeService.getOrCreateResourceTypeEntry(userResourceType);
     resourceTypeService.updateResourceType(userResourceType, userResourceTypeEntity);
 
-    ResourceType groupResourceType = resourceEndpoint.registerEndpoint(new GroupEndpointDefinition(new GroupHandler()));
-    groupResourceType.setFeatures(ResourceTypeFeatures.builder().autoFiltering(true).autoSorting(true).build());
-    ScimResourceTypeEntity groupResourceTypeEntity = resourceTypeService.getOrCreateResourceTypeEntry(groupResourceType);
+    ResourceType groupResourceType =
+        resourceEndpoint.registerEndpoint(new GroupEndpointDefinition(new GroupHandler()));
+    groupResourceType.setFeatures(
+        ResourceTypeFeatures.builder().autoFiltering(true).autoSorting(true).build());
+    ScimResourceTypeEntity groupResourceTypeEntity =
+        resourceTypeService.getOrCreateResourceTypeEntry(groupResourceType);
     resourceTypeService.updateResourceType(groupResourceType, groupResourceTypeEntity);
 
     /*
@@ -64,5 +69,4 @@ public final class ScimConfiguration
     */
     return resourceEndpoint;
   }
-
 }
