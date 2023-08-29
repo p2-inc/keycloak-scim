@@ -1,90 +1,17 @@
-> :warning: **DO NOT USE!** This is an experimental fork of the [scim-for-keycloak](https://github.com/Captain-P-Goldfish/scim-for-keycloak) project to asses the viability of exposing a simple SCIM server that is configured (hacked) using automatic admin UI of a User Federation provider. It is only posted here for collaborators. If you need a mature SCIM implementation, buy it from Pascal at (https://scim-for-keycloak.de/).
+> :warning: This is an experimental fork of the [scim-for-keycloak](https://github.com/Captain-P-Goldfish/scim-for-keycloak) project to asses the viability of exposing a simple SCIM server that is configured (hacked) using automatic admin UI of a User Federation provider. It is only posted here for collaborators. If you need a mature SCIM implementation, buy it from Pascal at (https://scim-for-keycloak.de/).
 
 TODO
 - add more configuration to the ConfigurationProperties that can be added to the service provider config
 - create a filter that can be passed to the endpoint that restricts the users/groups that can be modified (e.g. email filter based on org)
 - clean up and document 
 
------
 
-# SCIM for Keycloak website online
+This solves the original issue of support for the new keycloak web-admin by using the User Federation Provider automatic UI. 
 
-The website to get access to the SCIM for Keycloak project is online. You can access it under:
-https://scim-for-keycloak.de/
-
-It is only possible to get the free-license at the current moment but the application will soon be updated
-to make the enterprise version also available.
-
-**The website is in BETA mode but the SCIM for Keycloak artifact is finished and production ready.**
-
-## scim-for-keycloak goes enterprise (April 2023)
-
-I am currently working on a complete redevelopment of this project that has several benefits and a lot of fixes. The
-most important fix would be the performance issues with the list endpoint since filtering has moved on database-level.
-
-The following features will be available in the new version:
-
-- [x] Support for the new keycloak web-admin
-    - Keycloak has currently (26.02.2023) no valid solution for extending the web-administration console. I created a
-      solution that is bypassing this problem. The SCIM administration is still part of the plugin and can be accessed
-      via the web-administration of keycloak.
-- [x] filtering on database level
-    - performance tests showed 1_000_000 users in the database will cause a response behaviour of approximately 1.7
-      seconds. The bad performance is based on the count-operation. Due to this problem a configuration will be
-      present that can be used to disable the count operation if not needed. This will increase the response behaviour
-      to
-      approximately 70-107ms with 250 results per response.
-- [x] cluster support
-    - the scim-for-keycloak project has the problem that configuration changes are not appropriately reflected in a
-      clustered environment. Configurations will only be adapted after a restart. The enterprise version will reflect
-      any configuration change on-the-fly during runtime.
-- [x] adjustable schemas
-    - It will be possible to copy and modify the copied schema-definitions within the SCIM web administration console
-      and
-      assign these modified schemas to the users and groups endpoints. The schemas can be assigned as main schemas or
-      as an additional extension.
-- [x] new configuration options
-    - The development is based on the newest SCIM-SDK version and supports activation of new features like Sailspoint
-      and MS Azure workaround features
-- [ ] Creation of new Resource Types
-    - it would be basically possible to create new endpoint definitions during runtime and turn the keycloak into a
-      resource-server for users, but I decided to leave this feature out since I have no idea if its worth the effort.
-      At least I do not know if there is anyone who would need such a feature.
-
-Hopefully I will have everything in line until mid of April 2023.
-
-#  
-
-#  
-
-| Branch | Circle CI Status                                                                             |
-|:-------|:---------------------------------------------------------------------------------------------|
-| master | build deactivated due to build problem on circle-ci. But the current version is still stable |
-
-[//]: # ( master   [![CircleCI]&#40;https://circleci.com/gh/Captain-P-Goldfish/scim-for-keycloak/tree/master.svg?style=shield&#41;]&#40;https://circleci.com/gh/Captain-P-Goldfish/scim-for-keycloak/tree/master&#41;)
-
-## Donations
-
-If you like this work and want to support me you'll be able to treat me to a cup of coffee :-)
-
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate?hosted_button_id=LLRM6ZVL4G9PJ)
-
-<!-- TOC -->
-* [What is SCIM-for-keycloak?](#what-is-scim-for-keycloak)
-    * [Keycloak support matrix](#keycloak-support-matrix)
-    * [Versioning](#versioning)
-    * [Releases](#releases)
-    * [Release Notes](#release-notes)
-    * [How to build](#how-to-build)
-    * [Deploy into keycloak server](#deploy-into-keycloak-server)
-    * [Security Considerations](#security-considerations)
-    * [How to configure the SCIM endpoints](#how-to-configure-the-scim-endpoints)
-    * [Disabled by default](#disabled-by-default)
-    * [What is configurable?](#what-is-configurable)
-    * [Admin-Events (kc-13-b3, kc-14-b2+)](#admin-events--kc-13-b3-kc-14-b2-)
-    * [Disadvantages](#disadvantages)
-    * [Grant management-access for configuration](#grant-management-access-for-configuration)
-<!-- TOC -->
+Additionally, some other improvements were added.
+- filtering on database level
+- cluster support
+- development is based on the newest SCIM-SDK version and supports activation of new features like Sailspoint and MS Azure workaround features
 
 # What is SCIM-for-keycloak?
 

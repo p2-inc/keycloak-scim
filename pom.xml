@@ -209,6 +209,13 @@
                 <artifactId>versions-maven-plugin</artifactId>
                 <version>${version.maven.versions.plugin}</version>
             </plugin>
+
+	    <plugin> <!-- pretty up the code using google java standards `mvn fmt:format` -->
+              <groupId>com.spotify.fmt</groupId>
+              <artifactId>fmt-maven-plugin</artifactId>
+              <version>2.20</version>
+	    </plugin>
+
         </plugins>
     </build>
 

@@ -22,16 +22,9 @@ public abstract class AbstractEndpoint
   @Getter(AccessLevel.PROTECTED)
   private final KeycloakSession keycloakSession;
 
-  /**
-   * the currently accessed SCIM resource endpoint (there is one instance for each realm)
-   */
-  @Getter(AccessLevel.PROTECTED)
-  private final ResourceEndpoint resourceEndpoint;
-
   public AbstractEndpoint(KeycloakSession keycloakSession)
   {
     this.keycloakSession = keycloakSession;
-    this.resourceEndpoint = ScimConfiguration.getScimEndpoint(keycloakSession, true);
   }
 
 }

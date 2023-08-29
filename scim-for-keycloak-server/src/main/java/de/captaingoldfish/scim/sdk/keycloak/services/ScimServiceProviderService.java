@@ -14,6 +14,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+import org.keycloak.component.ComponentModel;
 import org.keycloak.models.ClientModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
@@ -35,6 +36,7 @@ import de.captaingoldfish.scim.sdk.common.resources.complex.SortConfig;
 import de.captaingoldfish.scim.sdk.common.resources.multicomplex.AuthenticationScheme;
 import de.captaingoldfish.scim.sdk.keycloak.entities.ScimServiceProviderEntity;
 
+import de.captaingoldfish.scim.sdk.keycloak.provider.ConfigurationProperties;
 
 /**
  * This implementation is used to handle actions on {@link ScimServiceProviderEntity} objects
@@ -45,30 +47,29 @@ import de.captaingoldfish.scim.sdk.keycloak.entities.ScimServiceProviderEntity;
 public class ScimServiceProviderService extends AbstractService
 {
 
-  public ScimServiceProviderService(KeycloakSession keycloakSession)
-  {
+  private final ComponentModel model;
+  
+  public ScimServiceProviderService(KeycloakSession keycloakSession, ComponentModel model) {
     super(keycloakSession);
+    this.model = model;
   }
 
-  /**
-   * @return the default {@link ScimServiceProviderEntity} configuration for the current realm
-   */
-  protected ScimServiceProviderEntity getDefaultServiceProviderConfiguration()
-  {
+  private ScimServiceProviderEntity getServiceProviderEntity() {
+    ConfigurationProperties props = new ConfigurationProperties(model);
     return ScimServiceProviderEntity.builder()
-                                    .realmId(getKeycloakSession().getContext().getRealm().getId())
-                                    .enabled(false)
-                                    .filterSupported(true)
-                                    .filterMaxResults(50)
-                                    .sortSupported(true)
-                                    .patchSupported(true)
-                                    .etagSupported(true)
-                                    .changePasswordSupported(false)
-                                    .bulkSupported(true)
-                                    .bulkMaxOperations(15)
-                                    .bulkMaxPayloadSize(2 * 1024 * 1024) // 2MB
-                                    .created(Instant.now())
-                                    .build();
+        .realmId(getKeycloakSession().getContext().getRealm().getId())
+        .enabled(true) //TODO where do I get this?
+        .filterSupported(props.isFilterSupported())
+        .filterMaxResults(props.getFilterMaxResults())
+        .sortSupported(props.isSortSupported())
+        .patchSupported(props.isPatchSupported())
+        .etagSupported(props.isEtagSupported())
+        .changePasswordSupported(props.isChangePasswordSupported())
+        .bulkSupported(props.isBulkSupported())
+        .bulkMaxOperations(props.getBulkMaxOperations())
+        .bulkMaxPayloadSize(props.getBulkMaxPayloadSize())
+        .created(Instant.now())
+        .build();
   }
 
   /**
@@ -77,56 +78,11 @@ public class ScimServiceProviderService extends AbstractService
    *
    * @return an already existing service provider or a newly created default setup
    */
-  public ServiceProvider getServiceProvider()
-  {
-    Optional<ScimServiceProviderEntity> scimServiceProviderEntityOptional = getServiceProviderEntity();
-    ScimServiceProviderEntity scimServiceProviderEntity;
-    scimServiceProviderEntity = scimServiceProviderEntityOptional.orElseGet(this::createServiceProviderEntity);
+  public ServiceProvider getServiceProvider() {
+    ScimServiceProviderEntity scimServiceProviderEntity = getServiceProviderEntity();
     return toScimRepresentation(scimServiceProviderEntity);
   }
-
-  /**
-   * updates the {@link ServiceProvider} representation for the current realm
-   * 
-   * @param serviceProvider the updated {@link ServiceProvider} representation
-   */
-  public ServiceProvider updateServiceProvider(ServiceProvider serviceProvider)
-  {
-    Optional<ScimServiceProviderEntity> scimServiceProviderEntityOptional = getServiceProviderEntity();
-    ScimServiceProviderEntity scimServiceProviderEntity;
-    scimServiceProviderEntity = scimServiceProviderEntityOptional.orElseGet(this::createServiceProviderEntity);
-
-    scimServiceProviderEntity.setEnabled(Optional.ofNullable(serviceProvider.get("enabled"))
-                                                 .map(JsonNode::booleanValue)
-                                                 .orElse(false));
-    scimServiceProviderEntity.setFilterSupported(serviceProvider.getFilterConfig().isSupported());
-    scimServiceProviderEntity.setFilterMaxResults(serviceProvider.getFilterConfig().getMaxResults());
-    scimServiceProviderEntity.setSortSupported(serviceProvider.getSortConfig().isSupported());
-    scimServiceProviderEntity.setPatchSupported(serviceProvider.getPatchConfig().isSupported());
-    scimServiceProviderEntity.setEtagSupported(serviceProvider.getETagConfig().isSupported());
-    scimServiceProviderEntity.setChangePasswordSupported(serviceProvider.getChangePasswordConfig().isSupported());
-    scimServiceProviderEntity.setBulkSupported(serviceProvider.getBulkConfig().isSupported());
-    scimServiceProviderEntity.setBulkMaxOperations(serviceProvider.getBulkConfig().getMaxOperations());
-    scimServiceProviderEntity.setBulkMaxPayloadSize(serviceProvider.getBulkConfig().getMaxPayloadSize());
-    scimServiceProviderEntity.setLastModified(Instant.now());
-
-    {
-      // the attribute authorizedClients is a custom attribute that will be added to the json structure from the
-      // web-admin console. It is not a registered SCIM attribute!
-      ArrayNode arrayNode = (ArrayNode)serviceProvider.get("authorizedClients");
-      Optional.ofNullable(arrayNode).ifPresent(clientIdArray -> {
-        Set<String> authorizedClientIds = new HashSet<>();
-        for ( JsonNode jsonNode : clientIdArray )
-        {
-          authorizedClientIds.add(jsonNode.textValue());
-        }
-        scimServiceProviderEntity.setAuthorizedClients(getAuthorizedClients(authorizedClientIds));
-      });
-    }
-
-    return toScimRepresentation(scimServiceProviderEntity);
-  }
-
+  
   /**
    * gets the {@link ClientEntity} representations with the given clientIds
    * 
@@ -173,23 +129,6 @@ public class ScimServiceProviderService extends AbstractService
     {
       return Optional.empty();
     }
-  }
-
-  /**
-   * @return either an existing representation from the database or an empty
-   */
-  public Optional<ScimServiceProviderEntity> getServiceProviderEntity()
-  {
-    return Optional.empty();
-  }
-
-  /**
-   * @return a new service provider instance that was just stored within the database
-   */
-  private ScimServiceProviderEntity createServiceProviderEntity()
-  {
-    ScimServiceProviderEntity scimServiceProvider = getDefaultServiceProviderConfiguration();
-    return scimServiceProvider;
   }
 
   /**
@@ -261,16 +200,12 @@ public class ScimServiceProviderService extends AbstractService
   /**
    * deletes the provider for the current realm
    */
-  public void deleteProvider()
-  {
-  }
+  public void deleteProvider() {}
 
   /**
    * removes all client associations of the given client from the service provider of the current realm
    * 
    * @param removedClient the client that was removed
    */
-  public void removeAssociatedClients(ClientModel removedClient)
-  {
-  }
+  public void removeAssociatedClients(ClientModel removedClient) {}
 }

@@ -40,7 +40,7 @@ public class ExtScimAuthorization extends ScimAuthorization
   private final KeycloakSession keycloakSession;
 
   public ExtScimAuthorization(KeycloakSession keycloakSession, String id, ComponentModel model) {
-    super(keycloakSession, null);
+    super(keycloakSession);
     this.id = id;
     this.model = model;
     this.keycloakSession = keycloakSession;

@@ -28,7 +28,6 @@ import de.captaingoldfish.scim.sdk.common.constants.HttpHeader;
 import de.captaingoldfish.scim.sdk.common.constants.enums.HttpMethod;
 import de.captaingoldfish.scim.sdk.common.exceptions.InternalServerException;
 import de.captaingoldfish.scim.sdk.common.response.ScimResponse;
-import de.captaingoldfish.scim.sdk.keycloak.auth.Authentication;
 import de.captaingoldfish.scim.sdk.keycloak.auth.ExtScimAuthorization;
 import de.captaingoldfish.scim.sdk.keycloak.auth.ScimAuthorization;
 import de.captaingoldfish.scim.sdk.keycloak.constants.ContextPaths;
@@ -47,16 +46,10 @@ import lombok.extern.slf4j.Slf4j;
 public class ScimEndpoint extends AbstractEndpoint {
 
   /**
-   * the authentication implementation
-   */
-  private Authentication authentication;
-
-  /**
    * @param authentication used as constructor param to pass a mockito mock during unit testing
    */
-  public ScimEndpoint(KeycloakSession keycloakSession, Authentication authentication) {
+  public ScimEndpoint(KeycloakSession keycloakSession) {
     super(keycloakSession);
-    this.authentication = authentication;
   }
 
   /**
@@ -72,12 +65,8 @@ public class ScimEndpoint extends AbstractEndpoint {
       throw new NotFoundException(id + " unknown");
     }
     
-    ScimServiceProviderService scimServiceProviderService = new ScimServiceProviderService(getKeycloakSession());
-    Optional<ScimServiceProviderEntity> serviceProviderEntity = scimServiceProviderService.getServiceProviderEntity();
-    if (serviceProviderEntity.isPresent() && !serviceProviderEntity.get().isEnabled()) {
-      throw new NotFoundException();
-    }
-    ResourceEndpoint resourceEndpoint = getResourceEndpoint();
+    ScimServiceProviderService scimServiceProviderService = new ScimServiceProviderService(getKeycloakSession(), model);
+    ResourceEndpoint resourceEndpoint = ScimConfiguration.getScimEndpoint(getKeycloakSession(), id);
 
     ExtScimAuthorization scimAuthorization = new ExtScimAuthorization(getKeycloakSession(), id, model);
     ScimKeycloakContext scimKeycloakContext = new ScimKeycloakContext(getKeycloakSession(), scimAuthorization);

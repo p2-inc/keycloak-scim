@@ -34,17 +34,19 @@ public class ScimConfigProviderFactory implements UserStorageProviderFactory<Sci
 
   @Override
   public void onCreate​(KeycloakSession session, RealmModel realm, ComponentModel model) {
+    ConfigurationProperties config = new ConfigurationProperties(model);
+
+    // URL 
     String authServerUrl = session.getContext().getAuthServerUrl().toString();
     if (!authServerUrl.endsWith("/")) authServerUrl = authServerUrl + "/";
     String url = String.format("%srealms/%s/scim/%s/v2", authServerUrl, realm.getName(), model.getId());
-    model.put(ConfigurationProperties.URL_PROPERTY, url);
-    //    model.getConfig().put("TEST_PROPERTY", List.of(String.format("https://foo.com/%s/scim/v2", model.getId())));
+    config.setBearerToken(url);
 
-    String bearerToken = model.get(ConfigurationProperties.BEARER_TOKEN_PROPERTY);
-    if (Strings.isNullOrEmpty(bearerToken)) {
-      bearerToken = KeycloakModelUtils.generateId();
+    // BEARER TOKEN
+    String bearerToken = config.getBearerToken();
+    if (Strings.isNullOrEmpty(bearerToken) || config.isRegenerateBearerToken()) {
+      config.setBearerToken(KeycloakModelUtils.generateCodeSecret());
     }
-    model.put(ConfigurationProperties.BEARER_TOKEN_PROPERTY, bearerToken);
     
     realm.updateComponent(model);
   }

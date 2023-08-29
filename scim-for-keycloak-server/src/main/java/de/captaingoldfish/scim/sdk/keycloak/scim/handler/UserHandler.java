@@ -60,6 +60,14 @@ public class UserHandler extends ResourceHandler<User>
 
   public static final String PRIMARY_SUFFIX = "_primary";
 
+  /*
+  private final Filter<User> filter;
+  
+  public UserHandler(Filter<User> filter) {
+    this.filter = filter;
+  }
+  */
+  
   /**
    * {@inheritDoc}
    */

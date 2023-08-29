@@ -30,8 +30,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Data
-public class ScimAuthorization implements Authorization
-{
+public abstract class ScimAuthorization implements Authorization {
 
   /**
    * the keycloak session that is passed to the resource endpoints
@@ -44,21 +43,14 @@ public class ScimAuthorization implements Authorization
   private AdminAuth authResult;
 
   /**
-   * this object is used for authentication
-   */
-  private Authentication authentication;
-
-  /**
    * used to inform the current {@link de.captaingoldfish.scim.sdk.keycloak.scim.ScimKeycloakContext} object
    * that an {@link ScimAdminEventBuilder} object can be created if called
    */
   @Setter
   private Consumer<AdminAuth> adminAuthConsumer;
 
-  public ScimAuthorization(KeycloakSession keycloakSession, Authentication authentication)
-  {
+  public ScimAuthorization(KeycloakSession keycloakSession) {
     this.keycloakSession = keycloakSession;
-    this.authentication = authentication;
   }
 
   /**
@@ -87,25 +79,7 @@ public class ScimAuthorization implements Authorization
    * authenticates the user
    */
   @Override
-  public boolean authenticate(Map<String, String> httpHeaders, Map<String, String> queryParams)
-  {
-    if (authResult == null)
-    {
-
-      try
-      {
-        authResult = authentication.authenticate(keycloakSession);
-        adminAuthConsumer.accept(authResult);
-      }
-      catch (NotAuthorizedException ex)
-      {
-        log.trace(ex.getMessage(), ex);
-        log.error("authentication failed");
-        return false;
-      }
-    }
-    return true;
-  }
+  public abstract boolean authenticate(Map<String, String> httpHeaders, Map<String, String> queryParams);
 
   /**
    * {@inheritDoc}

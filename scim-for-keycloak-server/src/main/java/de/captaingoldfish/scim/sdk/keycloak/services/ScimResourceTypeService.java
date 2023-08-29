@@ -19,6 +19,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import org.keycloak.component.ComponentModel;
 import org.keycloak.models.KeycloakSession;
 import org.keycloak.models.RealmModel;
 import org.keycloak.models.RoleModel;
@@ -47,10 +48,10 @@ import lombok.extern.slf4j.Slf4j;
 public class ScimResourceTypeService extends AbstractService
 {
 
-
-  public ScimResourceTypeService(KeycloakSession keycloakSession)
-  {
+  private final ComponentModel model;
+  public ScimResourceTypeService(KeycloakSession keycloakSession, ComponentModel model) {
     super(keycloakSession);
+    this.model = model;
   }
 
   /**
@@ -324,7 +325,7 @@ public class ScimResourceTypeService extends AbstractService
    */
   private void removeRolesFromCurrentConfig(RoleModel roleModel)
   {
-    ResourceEndpoint resourceEndpoint = ScimConfiguration.getScimEndpoint(getKeycloakSession(), false);
+    ResourceEndpoint resourceEndpoint = ScimConfiguration.getScimEndpoint(getKeycloakSession(), model);
     if (resourceEndpoint == null)
     {
       // in this case the realm itself was probably just removed
