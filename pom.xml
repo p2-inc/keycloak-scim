@@ -3,13 +3,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>de.captaingoldfish</groupId>
-  <artifactId>scim-for-keycloak</artifactId>
-  <version>kc-20-b1</version>
-
-  <name>SCIM for Keycloak</name>
-  <description>A third party module that extends keycloak by SCIM functionality</description>
-  <url>https://github.com/Captain-P-Goldfish/scim-for-keycloak</url>
+  <groupId>io.phasetwo.keycloak</groupId>
+  <artifactId>keycloak-scim</artifactId>
+  <version>0.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
 
   <licenses>
     <license>
@@ -18,43 +15,23 @@
     </license>
   </licenses>
 
-  <packaging>pom</packaging>
-
-  <modules>
-    <module>scim-for-keycloak-resources</module>
-    <module>scim-for-keycloak-server</module>
-    <module>scim-for-keycloak-bundle</module>
-  </modules>
+  <scm>
+    <url>https://github.com/xgp/keycloak-scim</url>
+    <connection>scm:git:git@github.com:xgp/keycloak-scim.git</connection>
+    <tag>HEAD</tag>
+  </scm>
 
   <properties>
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
-
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-
-    <!--suppress UnresolvedMavenProperty -->
-    <formatter-path>${project.parent.basedir}</formatter-path>
-
-    <version.lombok>1.18.24</version.lombok>
-
+    <version.auto-service>1.1.1</version.auto-service>
+    <version.lombok>1.18.28</version.lombok>
     <version.keycloak>22.0.1</version.keycloak>
     <version.resteasy-core-spi>6.2.4.Final</version.resteasy-core-spi>
     <version.scim.sdk>1.17.1-kc-SNAPSHOT</version.scim.sdk>
-
-    <!-- downgrade -->
-    <version.liquibase>4.8.0</version.liquibase>
-
-    <!-- test dependencies -->
-    <version.h2>1.4.200</version.h2>
-    <version.log4j2>2.18.0</version.log4j2>
-
-    <!-- plugin versions -->
-    <version.maven.assembly.plugin>3.4.1</version.maven.assembly.plugin>
-    <version.maven.versions.plugin>2.8.1</version.maven.versions.plugin>
     <version.maven.compiler.plugin>3.8.1</version.maven.compiler.plugin>
-    <version.maven.formatter.plugin>2.13.0</version.maven.formatter.plugin>
-    <version.maven.surefire.plugin>3.0.0-M5</version.maven.surefire.plugin>
   </properties>
 
   <dependencyManagement>
@@ -68,25 +45,12 @@
         <scope>import</scope>
       </dependency>
 
-      <!-- application dependencies -->
-      <dependency>
-        <groupId>de.captaingoldfish</groupId>
-        <artifactId>scim-for-keycloak-resources</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-
       <dependency>
         <groupId>org.keycloak</groupId>
         <artifactId>keycloak-parent</artifactId>
         <version>${version.keycloak}</version>
         <type>pom</type>
         <scope>import</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>de.captaingoldfish</groupId>
-        <artifactId>scim-for-keycloak-server</artifactId>
-        <version>${project.version}</version>
       </dependency>
 
       <dependency>
@@ -147,131 +111,216 @@
 	<version>2.15.0</version>
 	<scope>provided</scope>
       </dependency>
-
-      <!-- downgrade -->
-      <dependency>
-        <groupId>org.liquibase</groupId>
-        <artifactId>liquibase-core</artifactId>
-        <version>${version.liquibase}</version>
-        <scope>provided</scope>
-      </dependency>
-
-      <!-- test dependencies -->
-      <dependency>
-        <groupId>com.h2database</groupId>
-        <artifactId>h2</artifactId>
-        <version>${version.h2}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-core</artifactId>
-        <version>${version.log4j2}</version>
-        <scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.apache.logging.log4j</groupId>
-        <artifactId>log4j-slf4j-impl</artifactId>
-        <version>${version.log4j2}</version>
-        <scope>test</scope>
-      </dependency>
     </dependencies>
   </dependencyManagement>
 
   <dependencies>
+    <!-- annotation processing helpers for logging and services -->
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
+      <version>${version.lombok}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.auto.service</groupId>
+      <artifactId>auto-service</artifactId>
+      <version>${version.auto-service}</version>
+      <scope>provided</scope>
     </dependency>
 
     <!-- logging dependencies -->
     <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.logging.log4j</groupId>
-      <artifactId>log4j-slf4j-impl</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
+    <!-- keycloak dependencies -->
+    <dependency>
+      <groupId>org.keycloak</groupId>
+      <artifactId>keycloak-model-legacy</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.keycloak</groupId>
+      <artifactId>keycloak-core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.keycloak</groupId>
+      <artifactId>keycloak-server-spi</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.keycloak</groupId>
+      <artifactId>keycloak-server-spi-private</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.keycloak</groupId>
+      <artifactId>keycloak-services</artifactId>
+      <scope>provided</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>slf4j-log4j12</artifactId>
+          <groupId>org.slf4j</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>log4j</artifactId>
+          <groupId>log4j</groupId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.checkerframework</groupId>
+          <artifactId>checker-qual</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.keycloak</groupId>
+      <artifactId>keycloak-model-jpa</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-core-spi</artifactId>
+      <scope>provided</scope>
     </dependency>
 
-    <!-- test-dependencies -->
     <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-api</artifactId>
+      <groupId>org.jboss.spec.javax.servlet</groupId>
+      <artifactId>jboss-servlet-api_4.0_spec</artifactId>
+      <scope>provided</scope>
     </dependency>
+
     <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-params</artifactId>
+      <groupId>de.captaingoldfish</groupId>
+      <artifactId>scim-sdk-server</artifactId>
+      <exclusions>
+        <exclusion>
+          <artifactId>javax.ws.rs-api</artifactId>
+          <groupId>javax.ws.rs</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>org.antlr</artifactId>
+          <groupId>antlr4</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
+
     <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-engine</artifactId>
+      <groupId>org.antlr</groupId>
+      <artifactId>antlr4</artifactId>
+      <version>4.10.1</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>org.antlr</artifactId>
+          <groupId>antlr-runtime</groupId>
+        </exclusion>
+      </exclusions>
     </dependency>
+
     <dependency>
-      <groupId>org.hamcrest</groupId>
-      <artifactId>hamcrest</artifactId>
+      <groupId>jakarta.persistence</groupId>
+      <artifactId>jakarta.persistence-api</artifactId>
+      <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-    </dependency>
+
   </dependencies>
 
   <build>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <version>${version.maven.compiler.plugin}</version>
-        <configuration>
-          <source>${maven.compiler.source}</source>
-          <target>${maven.compiler.target}</target>
-          <encoding>${project.build.sourceEncoding}</encoding>
-        </configuration>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.5.0</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <artifactSet>
+                <excludes>
+                  <exclude>org.antlr:antlr-runtime</exclude>
+                  <exclude>commons-io:commons-io</exclude>
+                  <exclude>org.apache.commons:commons-lang3</exclude>
+                </excludes>
+              </artifactSet>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>${version.maven.surefire.plugin}</version>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.11.0</version>
         <configuration>
-          <groups>!integration-tests</groups>
+	  <forceJavacCompilerUse>true</forceJavacCompilerUse>
+          <source>${maven.compiler.source}</source>
+          <target>${maven.compiler.target}</target>
+	  <compilerArgument>-Xlint:unchecked</compilerArgument>
+	  <compilerArgument>-Xlint:deprecation</compilerArgument>
+          <useIncrementalCompilation>false</useIncrementalCompilation>
+	  <annotationProcessorPaths>
+            <path>
+	      <groupId>com.google.auto.service</groupId>
+	      <artifactId>auto-service</artifactId>
+	      <version>${version.auto-service}</version>
+            </path>
+            <path>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+              <version>${version.lombok}</version>
+            </path>
+          </annotationProcessorPaths>
         </configuration>
       </plugin>
-
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
-        <artifactId>versions-maven-plugin</artifactId>
-        <version>${version.maven.versions.plugin}</version>
+        <artifactId>buildnumber-maven-plugin</artifactId>
+        <version>1.4</version>
+        <executions>
+          <execution>
+            <id>detect-scm-revision</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>create</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <getRevisionOnlyOnce>true</getRevisionOnlyOnce>
+          <shortRevisionLength>8</shortRevisionLength>
+          <doCheck>false</doCheck>
+          <doUpdate>false</doUpdate>
+          <timestampFormat>{0,date,yyyyMMdd}</timestampFormat>
+        </configuration>
       </plugin>
-
+      <plugin>
+        <groupId>com.fizzed</groupId>
+        <artifactId>fizzed-versionizer-maven-plugin</artifactId>
+        <version>1.0.6</version>
+        <executions>
+          <execution>
+            <id>generate-version-class</id>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <javaPackage>${main.java.package}</javaPackage>
+          <versionCommit>${buildNumber}</versionCommit>
+        </configuration>
+      </plugin>
       <plugin> <!-- pretty up the code using google java standards `mvn fmt:format` -->
         <groupId>com.spotify.fmt</groupId>
         <artifactId>fmt-maven-plugin</artifactId>
         <version>2.20</version>
       </plugin>
-
     </plugins>
   </build>
 
-  <profiles>
-    <profile>
-      <id>integration-tests</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <configuration>
-              <groups>integration-test | !integration-test</groups>
-            </configuration>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
-  </profiles>
 </project>
