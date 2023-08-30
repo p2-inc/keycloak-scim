@@ -18,3 +18,5 @@ See:
 ## Configuration
 
 In the Keycloak Admin UI, navigate to the *User Federation* section and add new provider of type *SCIM v2*
+
+![scim config example](docs/images/scim-config.png)
