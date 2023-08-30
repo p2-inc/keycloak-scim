@@ -19,7 +19,7 @@ See:
 
 In the Keycloak Admin UI, navigate to the *User Federation* section and add new provider of type *SCIM v2*
 
-Don't fill out the *Generated URL* or *Bearer Token* fields. These will be generated for you after saving. If you need to regenerate the Bearer Token, switch *Generate Bearer Token* and save.
+Don't fill out the *Generated URL* or *Generated Bearer Token* fields. These will be generated for you after saving. If you need to regenerate the Bearer Token, switch *Regenerate Bearer Token* and save.
 
 ![scim config example](docs/images/scim-config.png)
 
