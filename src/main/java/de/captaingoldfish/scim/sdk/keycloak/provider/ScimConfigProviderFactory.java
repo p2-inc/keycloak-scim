@@ -57,8 +57,9 @@ public class ScimConfigProviderFactory implements UserStorageProviderFactory<Sci
     ConfigurationProperties oldConfig = new ConfigurationProperties(oldModel);
     ConfigurationProperties newConfig = new ConfigurationProperties(newModel);
 
-    if (!oldConfig.getScimUrl().equals(newConfig.getScimUrl())) {
-      newConfig.setScimUrl(oldConfig.getScimUrl());
+    if (oldConfig.getScimUrl() != null && newConfig.getScimUrl() != null &&
+        (!oldConfig.getScimUrl().equals(newConfig.getScimUrl()))) {
+      newConfig.setScimUrl(getScimUrl(session, realm, newModel));
       doUpdate = true;
     }
     

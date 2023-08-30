@@ -67,7 +67,7 @@ public class ScimEndpoint extends AbstractEndpoint {
     if (!config.isEnabled()) {
       throw new NotFoundException(id + " is currently disabled");
     }
-    
+
     ScimServiceProviderService scimServiceProviderService =
         new ScimServiceProviderService(getKeycloakSession(), model);
     ResourceEndpoint resourceEndpoint = ScimConfiguration.getScimEndpoint(getKeycloakSession(), id);

@@ -28,7 +28,7 @@ public final class ConfigurationProperties {
         new ProviderConfigProperty(
             URL_PROPERTY,
             "Generated URL",
-            "SCIMv2 URL to be given to provider SCIM client",
+            "SCIMv2 URL to be given to provider SCIM client. DO NOT EDIT.",
             STRING_TYPE,
             null);
     test.setReadOnly(true);
@@ -39,8 +39,8 @@ public final class ConfigurationProperties {
     ProviderConfigProperty test =
         new ProviderConfigProperty(
             BEARER_TOKEN_PROPERTY,
-            "Bearer Token",
-            "Bearer token to be given to provider SCIM client. Will be generated if empty or if Regenerate Bearer Token is enabled.",
+            "Generated Bearer Token",
+            "Bearer token to be given to provider SCIM client. Will be generated if empty or if Regenerate Bearer Token is enabled. DO NOT EDIT.",
             STRING_TYPE,
             null);
     test.setReadOnly(true);
@@ -110,7 +110,7 @@ public final class ConfigurationProperties {
   public boolean isEnabled() {
     return model.get(ENABLED_PROPERTY, true);
   }
-  
+
   public String getScimUrl() {
     return model.get(URL_PROPERTY);
   }
