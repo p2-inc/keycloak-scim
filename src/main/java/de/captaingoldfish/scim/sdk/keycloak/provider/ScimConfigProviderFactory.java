@@ -42,12 +42,7 @@ public class ScimConfigProviderFactory implements UserStorageProviderFactory<Sci
     log.info("ScimConfigProviderFactory onCreate");
     ConfigurationProperties config = new ConfigurationProperties(model);
 
-    String authServerUrl = session.getContext().getAuthServerUrl().toString();
-    if (!authServerUrl.endsWith("/"))
-      authServerUrl = authServerUrl + "/";
-    String url = String.format("%srealms/%s/scim/%s/v2", authServerUrl, realm.getName(), model.getId());
-    log.info("Setting SCIM url to {}", url);
-    config.setScimUrl(url);
+    config.setScimUrl(getScimUrl(session, realm, model));
 
     updateBearerToken(model);
     
@@ -57,9 +52,28 @@ public class ScimConfigProviderFactory implements UserStorageProviderFactory<Sci
   @Override
   public void onUpdate​(KeycloakSession session, RealmModel realm, ComponentModel oldModel, ComponentModel newModel) {
     log.info("ScimConfigProviderFactory onUpdate");
-    if (updateBearerToken(newModel)) {
+    boolean doUpdate = updateBearerToken(newModel);
+
+    ConfigurationProperties oldConfig = new ConfigurationProperties(oldModel);
+    ConfigurationProperties newConfig = new ConfigurationProperties(newModel);
+
+    if (!oldConfig.getScimUrl().equals(newConfig.getScimUrl())) {
+      newConfig.setScimUrl(oldConfig.getScimUrl());
+      doUpdate = true;
+    }
+    
+    if (doUpdate) {
       realm.updateComponent(newModel);
     }
+  }
+
+  String getScimUrl(KeycloakSession session, RealmModel realm, ComponentModel model) {
+    String authServerUrl = session.getContext().getAuthServerUrl().toString();
+    if (!authServerUrl.endsWith("/"))
+      authServerUrl = authServerUrl + "/";
+    String url = String.format("%srealms/%s/scim/%s/v2", authServerUrl, realm.getName(), model.getId());
+    log.debug("Setting SCIM url to {}", url);
+    return url;
   }
 
   boolean updateBearerToken(ComponentModel model) {

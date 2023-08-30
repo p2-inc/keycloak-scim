@@ -1,11 +1,11 @@
 package de.captaingoldfish.scim.sdk.keycloak.services;
 
-import java.util.Optional;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.models.GroupModel;
 import org.keycloak.models.KeycloakSession;

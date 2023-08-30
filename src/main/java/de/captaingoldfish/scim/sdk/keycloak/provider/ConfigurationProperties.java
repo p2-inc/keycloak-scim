@@ -9,6 +9,7 @@ import org.keycloak.provider.ProviderConfigProperty;
 public final class ConfigurationProperties {
 
   public static final String PROVIDER_NAME = "User migration using a REST client";
+  public static final String ENABLED_PROPERTY = "ENABLED";
   public static final String URL_PROPERTY = "URL";
   public static final String BEARER_TOKEN_PROPERTY = "BEARER_TOKEN";
   public static final String REGENERATE_BEARER_TOKEN_PROPERTY = "REGENERATE_BEARER_TOKEN";
@@ -39,9 +40,10 @@ public final class ConfigurationProperties {
         new ProviderConfigProperty(
             BEARER_TOKEN_PROPERTY,
             "Bearer Token",
-            "Bearer token to be given to provider SCIM client. Will be generated if empty.",
+            "Bearer token to be given to provider SCIM client. Will be generated if empty or if Regenerate Bearer Token is enabled.",
             STRING_TYPE,
             null);
+    test.setReadOnly(true);
     return test;
   }
 
@@ -52,7 +54,7 @@ public final class ConfigurationProperties {
           new ProviderConfigProperty(
               REGENERATE_BEARER_TOKEN_PROPERTY,
               "Regenerate Bearer Token",
-              "Clear previous bearer token and create a new one.",
+              "Clear previous bearer token and create a new one. WARNING! The previous token will stop working.",
               BOOLEAN_TYPE,
               "false"),
           new ProviderConfigProperty(
@@ -104,6 +106,11 @@ public final class ConfigurationProperties {
     this.model = model;
   }
 
+  // enabled comes from UserStorageProviderSpi.commonConfig
+  public boolean isEnabled() {
+    return model.get(ENABLED_PROPERTY, true);
+  }
+  
   public String getScimUrl() {
     return model.get(URL_PROPERTY);
   }
@@ -197,6 +204,6 @@ public final class ConfigurationProperties {
   }
 
   public void setBulkMaxPayloadSize(int bulkMaxPayloadSize) {
-    model.put(BULK_MAX_PAYLOAD_SIZE_PROPERTY, 2*1024*1024);
+    model.put(BULK_MAX_PAYLOAD_SIZE_PROPERTY, 2 * 1024 * 1024);
   }
 }

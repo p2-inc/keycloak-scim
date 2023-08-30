@@ -6,13 +6,9 @@ import de.captaingoldfish.scim.sdk.common.exceptions.InternalServerException;
 import de.captaingoldfish.scim.sdk.common.response.ScimResponse;
 import de.captaingoldfish.scim.sdk.keycloak.auth.ExtScimAuthorization;
 import de.captaingoldfish.scim.sdk.keycloak.constants.ContextPaths;
+import de.captaingoldfish.scim.sdk.keycloak.provider.ConfigurationProperties;
 import de.captaingoldfish.scim.sdk.keycloak.services.ScimServiceProviderService;
 import de.captaingoldfish.scim.sdk.server.endpoints.ResourceEndpoint;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.stream.Collectors;
 import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
@@ -24,6 +20,11 @@ import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.resteasy.spi.HttpRequest;
@@ -62,7 +63,11 @@ public class ScimEndpoint extends AbstractEndpoint {
     if (model == null) {
       throw new NotFoundException(id + " unknown");
     }
-
+    ConfigurationProperties config = new ConfigurationProperties(model);
+    if (!config.isEnabled()) {
+      throw new NotFoundException(id + " is currently disabled");
+    }
+    
     ScimServiceProviderService scimServiceProviderService =
         new ScimServiceProviderService(getKeycloakSession(), model);
     ResourceEndpoint resourceEndpoint = ScimConfiguration.getScimEndpoint(getKeycloakSession(), id);
