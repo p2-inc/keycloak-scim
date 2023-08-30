@@ -1,238 +1,277 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
+  <groupId>de.captaingoldfish</groupId>
+  <artifactId>scim-for-keycloak</artifactId>
+  <version>kc-20-b1</version>
 
-    <groupId>de.captaingoldfish</groupId>
-    <artifactId>scim-for-keycloak</artifactId>
-    <version>kc-20-b1</version>
+  <name>SCIM for Keycloak</name>
+  <description>A third party module that extends keycloak by SCIM functionality</description>
+  <url>https://github.com/Captain-P-Goldfish/scim-for-keycloak</url>
 
-    <name>SCIM for Keycloak</name>
-    <description>A third party module that extends keycloak by SCIM functionality</description>
-    <url>https://github.com/Captain-P-Goldfish/scim-for-keycloak</url>
+  <licenses>
+    <license>
+      <name>BSD-3-Clause</name>
+      <url>https://opensource.org/licenses/BSD-3-Clause</url>
+    </license>
+  </licenses>
 
-    <licenses>
-        <license>
-            <name>BSD-3-Clause</name>
-            <url>https://opensource.org/licenses/BSD-3-Clause</url>
-        </license>
-    </licenses>
+  <packaging>pom</packaging>
 
-    <packaging>pom</packaging>
+  <modules>
+    <module>scim-for-keycloak-resources</module>
+    <module>scim-for-keycloak-server</module>
+    <module>scim-for-keycloak-bundle</module>
+  </modules>
 
-    <modules>
-        <module>scim-for-keycloak-resources</module>
-        <module>scim-for-keycloak-server</module>
-    </modules>
+  <properties>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
 
-    <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <!--suppress UnresolvedMavenProperty -->
+    <formatter-path>${project.parent.basedir}</formatter-path>
 
-        <!--suppress UnresolvedMavenProperty -->
-        <formatter-path>${project.parent.basedir}</formatter-path>
+    <version.lombok>1.18.24</version.lombok>
 
-        <version.lombok>1.18.24</version.lombok>
+    <version.keycloak>22.0.1</version.keycloak>
+    <version.resteasy-core-spi>6.2.4.Final</version.resteasy-core-spi>
+    <version.scim.sdk>1.17.1-kc-SNAPSHOT</version.scim.sdk>
 
-        <version.keycloak>21.1.1</version.keycloak>
-        <version.resteasy-core-spi>4.7.7.Final</version.resteasy-core-spi>
-        <version.scim.sdk>1.17.1-kc</version.scim.sdk>
+    <!-- downgrade -->
+    <version.liquibase>4.8.0</version.liquibase>
 
-        <version.sun.javax.activation>1.2.0</version.sun.javax.activation>
-        <version.javax.activation>1.1.1</version.javax.activation>
+    <!-- test dependencies -->
+    <version.h2>1.4.200</version.h2>
+    <version.log4j2>2.18.0</version.log4j2>
 
-        <!-- downgrade -->
-        <version.liquibase>4.8.0</version.liquibase>
+    <!-- plugin versions -->
+    <version.maven.assembly.plugin>3.4.1</version.maven.assembly.plugin>
+    <version.maven.versions.plugin>2.8.1</version.maven.versions.plugin>
+    <version.maven.compiler.plugin>3.8.1</version.maven.compiler.plugin>
+    <version.maven.formatter.plugin>2.13.0</version.maven.formatter.plugin>
+    <version.maven.surefire.plugin>3.0.0-M5</version.maven.surefire.plugin>
+  </properties>
 
-        <!-- test dependencies -->
-        <version.h2>1.4.200</version.h2>
-        <version.log4j2>2.18.0</version.log4j2>
-
-        <!-- plugin versions -->
-        <version.maven.assembly.plugin>3.4.1</version.maven.assembly.plugin>
-        <version.maven.versions.plugin>2.8.1</version.maven.versions.plugin>
-        <version.maven.compiler.plugin>3.8.1</version.maven.compiler.plugin>
-        <version.maven.formatter.plugin>2.13.0</version.maven.formatter.plugin>
-        <version.maven.surefire.plugin>3.0.0-M5</version.maven.surefire.plugin>
-    </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <!-- base setup dependencies -->
-            <dependency>
-                <groupId>de.captaingoldfish</groupId>
-                <artifactId>scim-sdk-parent</artifactId>
-                <version>${version.scim.sdk}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <!-- application dependencies -->
-            <dependency>
-                <groupId>de.captaingoldfish</groupId>
-                <artifactId>scim-for-keycloak-resources</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>org.keycloak</groupId>
-                <artifactId>keycloak-parent</artifactId>
-                <version>${version.keycloak}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>de.captaingoldfish</groupId>
-                <artifactId>scim-for-keycloak-server</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>com.sun.activation</groupId>
-                <artifactId>javax.activation</artifactId>
-                <version>${version.sun.javax.activation}</version>
-            </dependency>
-            <dependency>
-                <groupId>javax.activation</groupId>
-                <artifactId>activation</artifactId>
-                <version>${version.javax.activation}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.jboss.resteasy</groupId>
-                <artifactId>resteasy-core-spi</artifactId>
-                <version>${version.resteasy-core-spi}</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <!-- downgrade -->
-            <dependency>
-                <groupId>org.liquibase</groupId>
-                <artifactId>liquibase-core</artifactId>
-                <version>${version.liquibase}</version>
-                <scope>provided</scope>
-            </dependency>
-
-            <!-- test dependencies -->
-            <dependency>
-                <groupId>com.h2database</groupId>
-                <artifactId>h2</artifactId>
-                <version>${version.h2}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-core</artifactId>
-                <version>${version.log4j2}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-slf4j-impl</artifactId>
-                <version>${version.log4j2}</version>
-                <scope>test</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
+  <dependencyManagement>
     <dependencies>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
+      <!-- base setup dependencies -->
+      <dependency>
+        <groupId>de.captaingoldfish</groupId>
+        <artifactId>scim-sdk-parent</artifactId>
+        <version>${version.scim.sdk}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
 
-        <!-- logging dependencies -->
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
+      <!-- application dependencies -->
+      <dependency>
+        <groupId>de.captaingoldfish</groupId>
+        <artifactId>scim-for-keycloak-resources</artifactId>
+        <version>${project.version}</version>
+      </dependency>
 
-        <!-- test-dependencies -->
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-params</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-        </dependency>
+      <dependency>
+        <groupId>org.keycloak</groupId>
+        <artifactId>keycloak-parent</artifactId>
+        <version>${version.keycloak}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>de.captaingoldfish</groupId>
+        <artifactId>scim-for-keycloak-server</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.jboss.resteasy</groupId>
+        <artifactId>resteasy-core-spi</artifactId>
+        <version>${version.resteasy-core-spi}</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <!-- javax/jakarta apis -->
+      <dependency>
+	<groupId>jakarta.activation</groupId>
+	<artifactId>activation-api</artifactId>
+	<version>2.1.2</version>
+	<scope>provided</scope>
+      </dependency>
+      <dependency>
+	<groupId>jakarta.persistence</groupId>
+	<artifactId>jakarta.persistence-api</artifactId>
+	<version>3.1.0</version>
+	<scope>provided</scope>
+      </dependency>
+      <dependency>
+	<groupId>jakarta.mail</groupId>
+	<artifactId>jakarta.mail-api</artifactId>
+	<version>2.1.0</version>
+	<scope>provided</scope>
+      </dependency>
+      <dependency>
+	<groupId>jakarta.ws.rs</groupId>
+	<artifactId>jakarta.ws.rs-api</artifactId>
+	<version>3.1.0</version>
+	<scope>provided</scope>
+      </dependency>
+      <dependency>
+	<groupId>jakarta.validation</groupId>
+	<artifactId>jakarta.validation-api</artifactId>
+	<version>3.0.2</version>
+	<scope>provided</scope>
+      </dependency>
+
+      <!-- jackson -->
+      <dependency>
+	<groupId>com.fasterxml.jackson.core</groupId>
+	<artifactId>jackson-annotations</artifactId>
+	<version>2.15.0</version>
+	<scope>provided</scope>
+      </dependency>
+      <dependency>
+	<groupId>com.fasterxml.jackson.core</groupId>
+	<artifactId>jackson-core</artifactId>
+	<version>2.15.0</version>
+	<scope>provided</scope>
+      </dependency>
+      <dependency>
+	<groupId>com.fasterxml.jackson.core</groupId>
+	<artifactId>jackson-databind</artifactId>
+	<version>2.15.0</version>
+	<scope>provided</scope>
+      </dependency>
+
+      <!-- downgrade -->
+      <dependency>
+        <groupId>org.liquibase</groupId>
+        <artifactId>liquibase-core</artifactId>
+        <version>${version.liquibase}</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <!-- test dependencies -->
+      <dependency>
+        <groupId>com.h2database</groupId>
+        <artifactId>h2</artifactId>
+        <version>${version.h2}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-core</artifactId>
+        <version>${version.log4j2}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.logging.log4j</groupId>
+        <artifactId>log4j-slf4j-impl</artifactId>
+        <version>${version.log4j2}</version>
+        <scope>test</scope>
+      </dependency>
     </dependencies>
+  </dependencyManagement>
 
-    <build>
+  <dependencies>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+    </dependency>
+
+    <!-- logging dependencies -->
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+
+    <!-- test-dependencies -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-params</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${version.maven.compiler.plugin}</version>
+        <configuration>
+          <source>${maven.compiler.source}</source>
+          <target>${maven.compiler.target}</target>
+          <encoding>${project.build.sourceEncoding}</encoding>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${version.maven.surefire.plugin}</version>
+        <configuration>
+          <groups>!integration-tests</groups>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>versions-maven-plugin</artifactId>
+        <version>${version.maven.versions.plugin}</version>
+      </plugin>
+
+      <plugin> <!-- pretty up the code using google java standards `mvn fmt:format` -->
+        <groupId>com.spotify.fmt</groupId>
+        <artifactId>fmt-maven-plugin</artifactId>
+        <version>2.20</version>
+      </plugin>
+
+    </plugins>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>integration-tests</id>
+      <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${version.maven.compiler.plugin}</version>
-                <configuration>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>${version.maven.surefire.plugin}</version>
-                <configuration>
-                    <groups>!integration-tests</groups>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>versions-maven-plugin</artifactId>
-                <version>${version.maven.versions.plugin}</version>
-            </plugin>
-
-	    <plugin> <!-- pretty up the code using google java standards `mvn fmt:format` -->
-              <groupId>com.spotify.fmt</groupId>
-              <artifactId>fmt-maven-plugin</artifactId>
-              <version>2.20</version>
-	    </plugin>
-
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <groups>integration-test | !integration-test</groups>
+            </configuration>
+          </plugin>
         </plugins>
-    </build>
-
-    <profiles>
-        <profile>
-            <id>integration-tests</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <configuration>
-                            <groups>integration-test | !integration-test</groups>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
+      </build>
+    </profile>
+  </profiles>
 </project>

@@ -54,45 +54,45 @@ public final class ConfigurationProperties {
               "Regenerate Bearer Token",
               "Clear previous bearer token and create a new one.",
               BOOLEAN_TYPE,
-              false),
+              "false"),
           new ProviderConfigProperty(
               FILTER_SUPPORTED_PROPERTY,
               "Filter Supported",
               "Filter Supported",
               BOOLEAN_TYPE,
-              false),
+              "true"),
           new ProviderConfigProperty(
               FILTER_MAX_RESULTS_PROPERTY,
               "Filter Max Results",
               "Filter Max Results",
               STRING_TYPE,
-              null),
+              "50"),
           new ProviderConfigProperty(
-              SORT_SUPPORTED_PROPERTY, "Sort Supported", "Sort Supported", BOOLEAN_TYPE, false),
+              SORT_SUPPORTED_PROPERTY, "Sort Supported", "Sort Supported", BOOLEAN_TYPE, "true"),
           new ProviderConfigProperty(
-              PATCH_SUPPORTED_PROPERTY, "Patch Supported", "Patch Supported", BOOLEAN_TYPE, false),
+              PATCH_SUPPORTED_PROPERTY, "Patch Supported", "Patch Supported", BOOLEAN_TYPE, "true"),
           new ProviderConfigProperty(
-              ETAG_SUPPORTED_PROPERTY, "Etag Supported", "Etag Supported", BOOLEAN_TYPE, false),
+              ETAG_SUPPORTED_PROPERTY, "Etag Supported", "Etag Supported", BOOLEAN_TYPE, "true"),
           new ProviderConfigProperty(
               CHANGE_PASSWORD_SUPPORTED_PROPERTY,
               "Change Password Supported",
               "Change Password Supported",
               BOOLEAN_TYPE,
-              false),
+              "false"),
           new ProviderConfigProperty(
-              BULK_SUPPORTED_PROPERTY, "Bulk Supported", "Bulk Supported", BOOLEAN_TYPE, false),
+              BULK_SUPPORTED_PROPERTY, "Bulk Supported", "Bulk Supported", BOOLEAN_TYPE, "true"),
           new ProviderConfigProperty(
               BULK_MAX_OPERATIONS_PROPERTY,
               "Bulk Max Operations",
               "Bulk Max Operations",
               STRING_TYPE,
-              null),
+              "15"),
           new ProviderConfigProperty(
               BULK_MAX_PAYLOAD_SIZE_PROPERTY,
               "Bulk Max Payload Size",
               "Bulk Max Payload Size",
               STRING_TYPE,
-              null));
+              "" + 2 * 1024 * 1024));
 
   public static List<ProviderConfigProperty> getConfigProperties() {
     return PROPERTIES;
@@ -129,7 +129,7 @@ public final class ConfigurationProperties {
   }
 
   public boolean isFilterSupported() {
-    return model.get(FILTER_SUPPORTED_PROPERTY, false);
+    return model.get(FILTER_SUPPORTED_PROPERTY, true);
   }
 
   public void setFilterSupported(boolean filterSupported) {
@@ -137,7 +137,7 @@ public final class ConfigurationProperties {
   }
 
   public int getFilterMaxResults() {
-    return model.get(FILTER_MAX_RESULTS_PROPERTY, Integer.MAX_VALUE);
+    return model.get(FILTER_MAX_RESULTS_PROPERTY, 50);
   }
 
   public void setFilterMaxResults(int filterMaxResults) {
@@ -145,7 +145,7 @@ public final class ConfigurationProperties {
   }
 
   public boolean isSortSupported() {
-    return model.get(SORT_SUPPORTED_PROPERTY, false);
+    return model.get(SORT_SUPPORTED_PROPERTY, true);
   }
 
   public void setSortSupported(boolean sortSupported) {
@@ -153,7 +153,7 @@ public final class ConfigurationProperties {
   }
 
   public boolean isPatchSupported() {
-    return model.get(PATCH_SUPPORTED_PROPERTY, false);
+    return model.get(PATCH_SUPPORTED_PROPERTY, true);
   }
 
   public void setPatchSupported(boolean patchSupported) {
@@ -161,7 +161,7 @@ public final class ConfigurationProperties {
   }
 
   public boolean isEtagSupported() {
-    return model.get(ETAG_SUPPORTED_PROPERTY, false);
+    return model.get(ETAG_SUPPORTED_PROPERTY, true);
   }
 
   public void setEtagSupported(boolean etagSupported) {
@@ -177,7 +177,7 @@ public final class ConfigurationProperties {
   }
 
   public boolean isBulkSupported() {
-    return model.get(BULK_SUPPORTED_PROPERTY, false);
+    return model.get(BULK_SUPPORTED_PROPERTY, true);
   }
 
   public void setBulkSupported(boolean bulkSupported) {
@@ -185,7 +185,7 @@ public final class ConfigurationProperties {
   }
 
   public int getBulkMaxOperations() {
-    return model.get(BULK_MAX_OPERATIONS_PROPERTY, Integer.MAX_VALUE);
+    return model.get(BULK_MAX_OPERATIONS_PROPERTY, 15);
   }
 
   public void setBulkMaxOperations(int bulkMaxOperations) {
@@ -197,6 +197,6 @@ public final class ConfigurationProperties {
   }
 
   public void setBulkMaxPayloadSize(int bulkMaxPayloadSize) {
-    model.put(BULK_MAX_PAYLOAD_SIZE_PROPERTY, bulkMaxPayloadSize);
+    model.put(BULK_MAX_PAYLOAD_SIZE_PROPERTY, 2*1024*1024);
   }
 }

@@ -1,7 +1,7 @@
 package de.captaingoldfish.scim.sdk.keycloak.audit;
 
 import java.util.Optional;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.connections.jpa.JpaConnectionProvider;
 import org.keycloak.events.admin.OperationType;

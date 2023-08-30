@@ -45,6 +45,7 @@ import org.keycloak.models.RealmModel;
 import org.keycloak.models.SubjectCredentialManager;
 import org.keycloak.models.UserCredentialModel;
 import org.keycloak.models.UserModel;
+import com.google.common.collect.ImmutableMap;
 
 /**
  * author Pascal Knueppel <br>
@@ -125,7 +126,9 @@ public class UserHandler extends ResourceHandler<User> {
     // the JPA criteria
     // api should be used
     RealmModel realmModel = keycloakSession.getContext().getRealm();
-    Stream<UserModel> userModels = keycloakSession.users().getUsersStream(realmModel);
+    //Stream<UserModel> userModels = keycloakSession.users().getUsersStream(realmModel);
+    //Stream<UserModel> userModels = keycloakSession.users().searchForUserStream(realmModel, null, Math.toIntExact(startIndex), count);
+    Stream<UserModel> userModels = keycloakSession.users().searchForUserStream(realmModel, ImmutableMap.of(), 0, Integer.MAX_VALUE);
     List<User> userList = userModels.map(this::modelToUser).collect(Collectors.toList());
     return PartialListResponse.<User>builder()
         .totalResults(userList.size())
