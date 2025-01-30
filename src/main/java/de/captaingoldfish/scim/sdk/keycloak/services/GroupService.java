@@ -43,7 +43,7 @@ public class GroupService extends AbstractService {
             criteriaBuilder.equal(root.get("realm"), realmModel.getId())));
     try {
       GroupEntity groupEntity = entityManager.createQuery(criteriaQuery).getSingleResult();
-      return Optional.of(new GroupAdapter(realmModel, entityManager, groupEntity));
+      return Optional.of(new GroupAdapter(getKeycloakSession(), realmModel, entityManager, groupEntity));
     } catch (NoResultException ex) {
       log.debug(ex.getMessage(), ex);
       return Optional.empty();

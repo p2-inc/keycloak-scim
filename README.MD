@@ -24,4 +24,17 @@ Don't fill out the *Generated URL* or *Generated Bearer Token* fields. These wil
 ![scim config example](docs/images/scim-config.png)
 
 
-
+NOTES
+- the differences in the SDK `-kc` versions seem to be the included antlr versions
+```
+-        <version.antlr>4.13.1</version.antlr>
++        <version.antlr>4.9.3</version.antlr>
+...
++        <version.antlr.runtime>3.5.3</version.antlr.runtime>
+...
++            <dependency>
++                <groupId>org.antlr</groupId>
++                <artifactId>antlr-runtime</artifactId>
++                <version>${version.antlr.runtime}</version>
++            </dependency>
+```

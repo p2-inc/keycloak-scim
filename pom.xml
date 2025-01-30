@@ -22,15 +22,16 @@
   </scm>
 
   <properties>
-    <maven.compiler.source>17</maven.compiler.source>
-    <maven.compiler.target>17</maven.compiler.target>
+    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.target>21</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <version.auto-service>1.1.1</version.auto-service>
-    <version.lombok>1.18.28</version.lombok>
-    <version.keycloak>22.0.1</version.keycloak>
+    <version.lombok>1.18.36</version.lombok>
+    <version.keycloak>26.1.0</version.keycloak>
     <version.resteasy-core-spi>6.2.4.Final</version.resteasy-core-spi>
-    <version.scim.sdk>1.17.1-kc-SNAPSHOT</version.scim.sdk>
+    <!-- 1.17.1-kc -->
+    <version.scim.sdk>1.27.1</version.scim.sdk>
     <version.maven.compiler.plugin>3.8.1</version.maven.compiler.plugin>
   </properties>
 
@@ -139,7 +140,7 @@
     <!-- keycloak dependencies -->
     <dependency>
       <groupId>org.keycloak</groupId>
-      <artifactId>keycloak-model-legacy</artifactId>
+      <artifactId>keycloak-model-jpa</artifactId>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -175,11 +176,6 @@
           <artifactId>checker-qual</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.keycloak</groupId>
-      <artifactId>keycloak-model-jpa</artifactId>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
